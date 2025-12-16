@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>08 - Orthogonality</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .interactive-controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .result-display {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        
+        .orthogonal-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .orthogonal-yes {
+            background: rgba(0, 255, 0, 0.3);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+        }
+        
+        .orthogonal-no {
+            background: rgba(255, 0, 0, 0.3);
+            border: 2px solid #ff0000;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⊥ Orthogonality</h1>
+            <p>Perpendicular Vectors and Mutually Exclusive States</p>
+        </header>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="interactive-controls">
+            <h3>Interactive Orthogonality Explorer</h3>
+            <p>Adjust vector components to explore orthogonality:</p>
+            
+            <h4>Vector v:</h4>
+            <div class="slider-container">
+                <label>v₁: <span class="value-display" id="v1-value">1.00</span></label>
+                <input type="range" id="v1" min="-2" max="2" step="0.1" value="1">
+            </div>
+            
+            <div class="slider-container">
+                <label>v₂: <span class="value-display" id="v2-value">0.00</span></label>
+                <input type="range" id="v2" min="-2" max="2" step="0.1" value="0">
+            </div>
+            
+            <h4>Vector w:</h4>
+            <div class="slider-container">
+                <label>w₁: <span class="value-display" id="w1-value">0.00</span></label>
+                <input type="range" id="w1" min="-2" max="2" step="0.1" value="0">
+            </div>
+            
+            <div class="slider-container">
+                <label>w₂: <span class="value-display" id="w2-value">1.00</span></label>
+                <input type="range" id="w2" min="-2" max="2" step="0.1" value="1">
+            </div>
+            
+            <div class="result-display">
+                Inner Product ⟨v|w⟩ = <span id="inner-product">0.00</span>
+                <span id="orthogonal-indicator" class="orthogonal-indicator orthogonal-yes">ORTHOGONAL ✓</span>
+            </div>
+            
+            <div class="result-display">
+                Angle θ = <span id="angle">90.00°</span>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="panel">
+                <h2>Definition</h2>
+                <p>Two vectors are <span class="highlight">orthogonal</span> if their inner product is zero:</p>
+                <div class="formula">
+                    ⟨v|w⟩ = 0
+                </div>
+                
+                <p>For real vectors:</p>
+                <div class="formula">
+                    v · w = v₁w₁ + v₂w₂ + ... + vₙwₙ = 0
+                </div>
+                
+                <p>For complex vectors:</p>
+                <div class="formula">
+                    ⟨v|w⟩ = v₁*w₁ + v₂*w₂ + ... + vₙ*wₙ = 0
+                </div>
+                
+                <div class="key-point">
+                    <strong>Geometric Interpretation:</strong> Orthogonal vectors are perpendicular (90° angle)
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Computational Basis Orthogonality</h2>
+                <p>The computational basis states are orthogonal:</p>
+                
+                <div class="formula">
+                    |0⟩ = [1, 0]ᵀ
+                </div>
+                <div class="formula">
+                    |1⟩ = [0, 1]ᵀ
+                </div>
+                
+                <p>Verify orthogonality:</p>
+                <div class="formula">
+                    ⟨0|1⟩ = 1* · 0 + 0* · 1 = 0 ✓
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example: Python Verification</h3>
+                    <div class="code-block">
+import numpy as np<br>
+<br>
+zero = np.array([1, 0])<br>
+one = np.array([0, 1])<br>
+<br>
+inner_product = np.vdot(zero, one)<br>
+print(f"⟨0|1⟩ = {inner_product}")  # 0<br>
+<br>
+# Check orthogonality<br>
+is_orthogonal = np.isclose(inner_product, 0)<br>
+print(f"Orthogonal: {is_orthogonal}")  # True
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Hadamard Basis Orthogonality</h2>
+                <p>The Hadamard basis states are also orthogonal:</p>
+                
+                <div class="formula">
+                    |+⟩ = (1/√2)[1, 1]ᵀ
+                </div>
+                <div class="formula">
+                    |-⟩ = (1/√2)[1, -1]ᵀ
+                </div>
+                
+                <p>Verify orthogonality:</p>
+                <div class="formula">
+                    ⟨+|-⟩ = (1/√2)* · (1/√2) + (1/√2)* · (-1/√2)
+                </div>
+                <div class="formula">
+                    = 1/2 - 1/2 = 0 ✓
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example: Python Verification</h3>
+                    <div class="code-block">
+plus = (1/np.sqrt(2)) * np.array([1, 1])<br>
+minus = (1/np.sqrt(2)) * np.array([1, -1])<br>
+<br>
+inner_product = np.vdot(plus, minus)<br>
+print(f"⟨+|-⟩ = {inner_product:.4f}")  # 0.0000<br>
+<br>
+is_orthogonal = np.isclose(inner_product, 0)<br>
+print(f"Orthogonal: {is_orthogonal}")  # True
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Orthonormality</h2>
+                <p>A set of vectors is <span class="highlight">orthonormal</span> if:</p>
+                <ul>
+                    <li>All pairs are orthogonal: ⟨vᵢ|vⱼ⟩ = 0 for i ≠ j</li>
+                    <li>All vectors are normalized: ⟨vᵢ|vᵢ⟩ = 1</li>
+                </ul>
+                
+                <p>Compact notation:</p>
+                <div class="formula">
+                    ⟨vᵢ|vⱼ⟩ = δᵢⱼ
+                </div>
+                <p>where δᵢⱼ is the Kronecker delta (1 if i=j, 0 otherwise)</p>
+                
+                <div class="example-box">
+                    <h3>Computational Basis is Orthonormal</h3>
+                    <p>⟨0|0⟩ = 1 ✓ (normalized)</p>
+                    <p>⟨1|1⟩ = 1 ✓ (normalized)</p>
+                    <p>⟨0|1⟩ = 0 ✓ (orthogonal)</p>
+                    <p>⟨1|0⟩ = 0 ✓ (orthogonal)</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Quantum Interpretation</h2>
+            
+            <h3>Mutually Exclusive Outcomes</h3>
+            <p>Orthogonal quantum states represent mutually exclusive measurement outcomes:</p>
+            <ul>
+                <li>If a qubit is in state |0⟩, measuring it will never yield |1⟩</li>
+                <li>If a qubit is in state |1⟩, measuring it will never yield |0⟩</li>
+            </ul>
+            
+            <div class="key-point">
+                <strong>Physical Meaning:</strong> Measuring one orthogonal state eliminates the possibility of the other
+            </div>
+            
+            <h3>Distinguishability</h3>
+            <p>Orthogonal states can be perfectly distinguished by measurement:</p>
+            <ul>
+                <li>|0⟩ and |1⟩ can be perfectly distinguished</li>
+                <li>|+⟩ and |-⟩ can be perfectly distinguished</li>
+                <li>Non-orthogonal states cannot be perfectly distinguished</li>
+            </ul>
+        </div>
+        
+        <div class="panel">
+            <h2>Properties of Orthogonal Vectors</h2>
+            
+            <h3>1. Pythagorean Theorem</h3>
+            <p>For orthogonal vectors v and w:</p>
+            <div class="formula">
+                ||v + w||² = ||v||² + ||w||²
+            </div>
+            
+            <h3>2. Independence</h3>
+            <p>Orthogonal vectors are linearly independent</p>
+            
+            <h3>3. Projection</h3>
+            <p>The projection of v onto orthogonal w is zero:</p>
+            <div class="formula">
+                proj_w(v) = (⟨v|w⟩/⟨w|w⟩)w = 0
+            </div>
+            
+            <h3>4. Decomposition</h3>
+            <p>Any vector can be uniquely decomposed into orthogonal components</p>
+        </div>
+        
+        <div class="panel">
+            <h2>Examples</h2>
+            
+            <div class="example-box">
+                <h3>Example 1: Classical 2D Vectors</h3>
+                <p>v = [3, 0], w = [0, 4]</p>
+                <div class="formula">
+                    v · w = 3·0 + 0·4 = 0 ✓
+                </div>
+                <p>These vectors are orthogonal (perpendicular)</p>
+            </div>
+            
+            <div class="example-box">
+                <h3>Example 2: Classical 3D Vectors</h3>
+                <p>v = [1, 0, 0], w = [0, 1, 0]</p>
+                <div class="formula">
+                    v · w = 1·0 + 0·1 + 0·0 = 0 ✓
+                </div>
+                <p>Standard basis vectors are orthogonal</p>
+            </div>
+            
+            <div class="example-box">
+                <h3>Example 3: Non-Orthogonal Quantum States</h3>
+                <p>|0⟩ = [1, 0]ᵀ, |+⟩ = [1/√2, 1/√2]ᵀ</p>
+                <div class="formula">
+                    ⟨0|+⟩ = 1·(1/√2) + 0·(1/√2) = 1/√2 ≠ 0
+                </div>
+                <p>These states are NOT orthogonal</p>
+                <p>Angle: θ = arccos(1/√2) = 45°</p>
+            </div>
+            
+            <div class="example-box">
+                <h3>Example 4: Complex Orthogonal Vectors</h3>
+                <p>v = [1, i], w = [i, 1]</p>
+                <div class="formula">
+                    ⟨v|w⟩ = 1*·i + i*·1 = -i + i = 0 ✓
+                </div>
+                <p>These complex vectors are orthogonal</p>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Gram-Schmidt Orthogonalization</h2>
+            <p>Process to convert any set of linearly independent vectors into an orthonormal set:</p>
+            
+            <h3>Algorithm:</h3>
+            <ol>
+                <li>Start with first vector: u₁ = v₁/||v₁||</li>
+                <li>For each subsequent vector vₖ:
+                    <ul>
+                        <li>Subtract projections onto previous vectors</li>
+                        <li>Normalize the result</li>
+                    </ul>
+                </li>
+            </ol>
+            
+            <div class="formula">
+                uₖ = (vₖ - Σⱼ₌₁ᵏ⁻¹ ⟨vₖ|uⱼ⟩uⱼ) / ||vₖ - Σⱼ₌₁ᵏ⁻¹ ⟨vₖ|uⱼ⟩uⱼ||
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Orthogonalize Two Vectors</h3>
+                <p>Given: v₁ = [1, 1], v₂ = [1, 0]</p>
+                
+                <p>Step 1: Normalize v₁</p>
+                <div class="formula">
+                    u₁ = v₁/||v₁|| = [1/√2, 1/√2]
+                </div>
+                
+                <p>Step 2: Remove projection of v₂ onto u₁</p>
+                <div class="formula">
+                    v₂' = v₂ - ⟨v₂|u₁⟩u₁
+                </div>
+                <div class="formula">
+                    = [1, 0] - (1/√2)[1/√2, 1/√2]
+                </div>
+                <div class="formula">
+                    = [1/2, -1/2]
+                </div>
+                
+                <p>Step 3: Normalize</p>
+                <div class="formula">
+                    u₂ = v₂'/||v₂'|| = [1/√2, -1/√2]
+                </div>
+                
+                <p>Result: {u₁, u₂} is orthonormal</p>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Applications</h2>
+            
+            <h3>1. Quantum Measurement</h3>
+            <p>Measurement bases consist of orthogonal states</p>
+            <ul>
+                <li>Computational basis: {|0⟩, |1⟩}</li>
+                <li>Hadamard basis: {|+⟩, |-⟩}</li>
+            </ul>
+            
+            <h3>2. Quantum Error Correction</h3>
+            <p>Error syndromes are detected using orthogonal subspaces</p>
+            
+            <h3>3. Quantum Cryptography</h3>
+            <p>BB84 protocol uses two orthogonal bases for secure key distribution</p>
+            
+            <h3>4. State Discrimination</h3>
+            <p>Orthogonal states can be perfectly distinguished, non-orthogonal cannot</p>
+            
+            <h3>5. Hilbert Space Structure</h3>
+            <p>Orthonormal bases provide coordinate systems for quantum states</p>
+        </div>
+        
+        <div class="panel">
+            <h2>Testing Orthogonality</h2>
+            
+            <h3>Method 1: Inner Product</h3>
+            <p>Compute ⟨v|w⟩ and check if it equals zero</p>
+            
+            <h3>Method 2: Angle</h3>
+            <p>Compute angle θ = arccos(⟨v|w⟩/(||v|| ||w||))</p>
+            <p>Orthogonal if θ = 90° = π/2 radians</p>
+            
+            <h3>Method 3: Pythagorean Theorem</h3>
+            <p>Check if ||v + w||² = ||v||² + ||w||²</p>
+            
+            <div class="example-box">
+                <h3>Python Implementation</h3>
+                <div class="code-block">
+def are_orthogonal(v, w, tolerance=1e-10):<br>
+    """Check if two vectors are orthogonal"""<br>
+    inner_prod = np.vdot(v, w)<br>
+    return np.abs(inner_prod) < tolerance<br>
+<br>
+# Test<br>
+v = np.array([1, 0])<br>
+w = np.array([0, 1])<br>
+print(are_orthogonal(v, w))  # True<br>
+<br>
+v = np.array([1, 1])<br>
+w = np.array([1, 0])<br>
+print(are_orthogonal(v, w))  # False
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="../07-basis-vectors/index.html" class="btn">← Previous: Basis Vectors</a>
+            <a href="../index.html" class="btn">Home</a>
+            <a href="../09-linear-independence/index.html" class="btn">Next: Linear Independence →</a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let vArrow, wArrow, projectionLine;
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(5, 4, 5);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            createScene();
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.8, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            setupControls();
+            
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+        
+        function createScene() {
+            const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            updateVectors(1, 0, 0, 1);
+        }
+        
+        function updateVectors(v1, v2, w1, w2) {
+            // Remove old objects
+            if (vArrow) scene.remove(vArrow);
+            if (wArrow) scene.remove(wArrow);
+            if (projectionLine) scene.remove(projectionLine);
+            
+            // Update displays
+            document.getElementById('v1-value').textContent = v1.toFixed(2);
+            document.getElementById('v2-value').textContent = v2.toFixed(2);
+            document.getElementById('w1-value').textContent = w1.toFixed(2);
+            document.getElementById('w2-value').textContent = w2.toFixed(2);
+            
+            // Calculate inner product
+            const innerProduct = v1 * w1 + v2 * w2;
+            document.getElementById('inner-product').textContent = innerProduct.toFixed(4);
+            
+            // Calculate angle
+            const vNorm = Math.sqrt(v1 * v1 + v2 * v2);
+            const wNorm = Math.sqrt(w1 * w1 + w2 * w2);
+            let angle = 0;
+            
+            if (vNorm > 0.01 && wNorm > 0.01) {
+                const cosAngle = innerProduct / (vNorm * wNorm);
+                angle = Math.acos(Math.max(-1, Math.min(1, cosAngle))) * 180 / Math.PI;
+            }
+            
+            document.getElementById('angle').textContent = angle.toFixed(2) + '°';
+            
+            // Update orthogonality indicator
+            const indicator = document.getElementById('orthogonal-indicator');
+            const isOrthogonal = Math.abs(innerProduct) < 0.1;
+            
+            if (isOrthogonal) {
+                indicator.textContent = 'ORTHOGONAL ✓';
+                indicator.className = 'orthogonal-indicator orthogonal-yes';
+            } else {
+                indicator.textContent = 'NOT ORTHOGONAL ✗';
+                indicator.className = 'orthogonal-indicator orthogonal-no';
+            }
+            
+            // Create vector v (blue)
+            if (vNorm > 0.01) {
+                const vDir = new THREE.Vector3(v1, 0, v2).normalize();
+                const vLength = Math.min(vNorm, 3);
+                vArrow = new THREE.ArrowHelper(vDir, new THREE.Vector3(0, 0, 0), vLength, 0x0088ff, 0.4, 0.25);
+                scene.add(vArrow);
+            }
+            
+            // Create vector w (red)
+            if (wNorm > 0.01) {
+                const wDir = new THREE.Vector3(w1, 0, w2).normalize();
+                const wLength = Math.min(wNorm, 3);
+                wArrow = new THREE.ArrowHelper(wDir, new THREE.Vector3(0, 0, 0), wLength, 0xff0088, 0.4, 0.25);
+                scene.add(wArrow);
+            }
+            
+            // Draw angle arc if not orthogonal
+            if (!isOrthogonal && vNorm > 0.01 && wNorm > 0.01) {
+                const arcRadius = 0.8;
+                const startAngle = Math.atan2(v2, v1);
+                const endAngle = Math.atan2(w2, w1);
+                
+                const curve = new THREE.EllipseCurve(
+                    0, 0,
+                    arcRadius, arcRadius,
+                    startAngle, endAngle,
+                    false,
+                    0
+                );
+                
+                const points = curve.getPoints(50);
+                const geometry = new THREE.BufferGeometry().setFromPoints(
+                    points.map(p => new THREE.Vector3(p.x, 0.1, p.y))
+                );
+                const material = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 });
+                const arc = new THREE.Line(geometry, material);
+                scene.add(arc);
+            }
+        }
+        
+        function setupControls() {
+            const sliders = ['v1', 'v2', 'w1', 'w2'];
+            
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                
+                slider.addEventListener('input', function() {
+                    const v1 = parseFloat(document.getElementById('v1').value);
+                    const v2 = parseFloat(document.getElementById('v2').value);
+                    const w1 = parseFloat(document.getElementById('w1').value);
+                    const w2 = parseFloat(document.getElementById('w2').value);
+                    
+                    updateVectors(v1, v2, w1, w2);
+                });
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
