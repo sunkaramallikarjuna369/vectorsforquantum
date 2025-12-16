@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Vectors in Quantum Computing</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 968px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        h2 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #ffeb3b;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        #canvas-container {
+            width: 100%;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .formula {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        
+        .highlight {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .key-point {
+            background: rgba(76, 175, 80, 0.2);
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .example {
+            background: rgba(33, 150, 243, 0.2);
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background: rgba(255, 215, 0, 0.3);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid #ffd700;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📐 Concept 1: Introduction to Vectors</h1>
+            <p class="subtitle">The Backbone of Quantum Computing</p>
+        </header>
+        
+        <div class="content-grid">
+            <div class="section full-width">
+                <h2>Interactive 3D Visualization</h2>
+                <div id="canvas-container"></div>
+                <p style="text-align: center; margin-top: 10px; opacity: 0.8;">
+                    🖱️ Drag to rotate • Scroll to zoom • Watch vectors representing quantum states
+                </p>
+            </div>
+            
+            <div class="section">
+                <h2>What Are Vectors?</h2>
+                <p>Vectors are fundamental mathematical objects that serve as the backbone of both classical physics and quantum mechanics.</p>
+                
+                <h3>Classical Context</h3>
+                <p>In classical physics, vectors represent quantities with both <span class="highlight">magnitude</span> and <span class="highlight">direction</span>:</p>
+                <ul>
+                    <li><strong>Force:</strong> Push or pull with specific direction</li>
+                    <li><strong>Velocity:</strong> Speed with direction of motion</li>
+                    <li><strong>Displacement:</strong> Distance with direction from origin</li>
+                    <li><strong>Momentum:</strong> Mass times velocity vector</li>
+                </ul>
+                
+                <div class="example">
+                    <strong>Example:</strong> A force of 10 Newtons pointing northeast can be represented as a vector with magnitude 10 and direction 45°.
+                </div>
+                
+                <h3>Quantum Context</h3>
+                <p>In quantum computing, vectors take on a more abstract but equally powerful role:</p>
+                <ul>
+                    <li><strong>Quantum States:</strong> Represented as vectors in complex Hilbert space</li>
+                    <li><strong>Superposition:</strong> Linear combinations of basis vectors</li>
+                    <li><strong>Probability Amplitudes:</strong> Vector components encode measurement probabilities</li>
+                    <li><strong>Entanglement:</strong> Multi-dimensional vector spaces for coupled systems</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Vectors in Quantum Computing</h2>
+                
+                <div class="key-point">
+                    <strong>Key Insight:</strong> In quantum computing, a quantum state is represented by a column vector whose elements are complex probability amplitudes.
+                </div>
+                
+                <h3>Hilbert Space</h3>
+                <p>Quantum states exist in an abstract complex vector space called <span class="highlight">Hilbert space</span>. This is a complete inner product space where:</p>
+                <ul>
+                    <li>Vectors represent quantum states</li>
+                    <li>Vector addition represents superposition</li>
+                    <li>Inner products give probability amplitudes</li>
+                    <li>Normalization ensures total probability = 1</li>
+                </ul>
+                
+                <h3>Quantum State Representation</h3>
+                <p>A quantum state |ψ⟩ is represented as a column vector:</p>
+                
+                <div class="formula">
+                    |ψ⟩ = [α₀, α₁, α₂, ..., αₙ]ᵀ
+                </div>
+                
+                <p>Where:</p>
+                <ul>
+                    <li><strong>αᵢ</strong> are complex probability amplitudes</li>
+                    <li><strong>|αᵢ|²</strong> gives the probability of measuring state i</li>
+                    <li><strong>Σ|αᵢ|² = 1</strong> (normalization condition)</li>
+                </ul>
+                
+                <h3>Single Qubit Example</h3>
+                <p>A qubit (quantum bit) is represented by a 2-dimensional vector:</p>
+                
+                <div class="formula">
+                    |ψ⟩ = α|0⟩ + β|1⟩ = [α, β]ᵀ
+                </div>
+                
+                <p>Where |α|² + |β|² = 1</p>
+                
+                <div class="example">
+                    <strong>Example:</strong> The state |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩ represents a qubit in equal superposition with 50% probability of measuring 0 and 50% probability of measuring 1.
+                </div>
+            </div>
+            
+            <div class="section full-width">
+                <h2>Probability Amplitudes and Measurement</h2>
+                
+                <p>The connection between vectors and quantum measurement is fundamental:</p>
+                
+                <table>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Mathematical Representation</th>
+                        <th>Physical Meaning</th>
+                    </tr>
+                    <tr>
+                        <td>Quantum State</td>
+                        <td>|ψ⟩ = Σᵢ αᵢ|i⟩</td>
+                        <td>Superposition of basis states</td>
+                    </tr>
+                    <tr>
+                        <td>Amplitude</td>
+                        <td>αᵢ ∈ ℂ</td>
+                        <td>Complex coefficient for state |i⟩</td>
+                    </tr>
+                    <tr>
+                        <td>Probability</td>
+                        <td>P(i) = |αᵢ|²</td>
+                        <td>Probability of measuring state i</td>
+                    </tr>
+                    <tr>
+                        <td>Normalization</td>
+                        <td>Σᵢ |αᵢ|² = 1</td>
+                        <td>Total probability must equal 1</td>
+                    </tr>
+                </table>
+                
+                <h3>The Measurement Process</h3>
+                <p>When we measure a quantum state:</p>
+                <ol>
+                    <li><strong>Before measurement:</strong> The state exists in superposition (all amplitudes contribute)</li>
+                    <li><strong>During measurement:</strong> The state "collapses" to one of the basis states</li>
+                    <li><strong>After measurement:</strong> We observe a definite classical outcome with probability |αᵢ|²</li>
+                </ol>
+                
+                <div class="key-point">
+                    <strong>Born Rule:</strong> The probability of measuring a particular state is given by the square of the magnitude of its amplitude. This is the fundamental link between the quantum (vector) description and classical (probabilistic) observations.
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Classical vs Quantum Vectors</h2>
+                
+                <h3>Classical Vectors</h3>
+                <ul>
+                    <li>Components are real numbers</li>
+                    <li>Represent physical quantities (force, velocity)</li>
+                    <li>Magnitude has direct physical meaning</li>
+                    <li>Direction is in physical space</li>
+                </ul>
+                
+                <div class="example">
+                    <strong>Classical Example:</strong><br>
+                    Velocity vector: v⃗ = [3, 4] m/s<br>
+                    Magnitude: |v⃗| = 5 m/s<br>
+                    Direction: 53.13° from x-axis
+                </div>
+                
+                <h3>Quantum Vectors</h3>
+                <ul>
+                    <li>Components are complex numbers</li>
+                    <li>Represent quantum states in Hilbert space</li>
+                    <li>Magnitude squared gives probability</li>
+                    <li>"Direction" is in abstract state space</li>
+                </ul>
+                
+                <div class="example">
+                    <strong>Quantum Example:</strong><br>
+                    Qubit state: |ψ⟩ = [0.6, 0.8i]<br>
+                    P(0) = |0.6|² = 0.36 (36%)<br>
+                    P(1) = |0.8i|² = 0.64 (64%)
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Why Vectors Matter in Quantum Computing</h2>
+                
+                <p>Vectors are not just a convenient notation—they are essential to quantum computing:</p>
+                
+                <div class="key-point">
+                    <strong>1. State Representation</strong><br>
+                    Every quantum state can be uniquely represented as a vector in Hilbert space. This provides a complete mathematical description of the quantum system.
+                </div>
+                
+                <div class="key-point">
+                    <strong>2. Superposition</strong><br>
+                    Vector addition naturally represents quantum superposition. A quantum state can be in multiple classical states simultaneously, represented as a linear combination of basis vectors.
+                </div>
+                
+                <div class="key-point">
+                    <strong>3. Quantum Operations</strong><br>
+                    Quantum gates are linear transformations (matrices) acting on state vectors. This makes quantum algorithms mathematically tractable.
+                </div>
+                
+                <div class="key-point">
+                    <strong>4. Measurement Theory</strong><br>
+                    Inner products between vectors give probability amplitudes for measurement outcomes. This connects the quantum formalism to observable results.
+                </div>
+                
+                <div class="key-point">
+                    <strong>5. Entanglement</strong><br>
+                    Multi-qubit systems are represented by tensor products of vectors, naturally describing quantum correlations that have no classical analogue.
+                </div>
+            </div>
+            
+            <div class="section full-width">
+                <h2>Python Example: Basic Vector Representation</h2>
+                
+                <div class="code-block">
+<pre>import numpy as np
+
+# Classical vector (real components)
+classical_vector = np.array([3, 4])
+magnitude = np.linalg.norm(classical_vector)
+print(f"Classical vector: {classical_vector}")
+print(f"Magnitude: {magnitude}")
+
+# Quantum state vector (complex components)
+# Representing |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩
+quantum_state = np.array([1/np.sqrt(2), 1/np.sqrt(2)], dtype=complex)
+print(f"\nQuantum state: {quantum_state}")
+
+# Calculate probabilities
+probabilities = np.abs(quantum_state)**2
+print(f"P(0) = {probabilities[0]:.3f}")
+print(f"P(1) = {probabilities[1]:.3f}")
+print(f"Total probability = {np.sum(probabilities):.3f}")
+
+# Another quantum state with complex amplitudes
+psi = np.array([0.6, 0.8j], dtype=complex)
+print(f"\nComplex quantum state: {psi}")
+print(f"P(0) = {np.abs(psi[0])**2:.3f}")
+print(f"P(1) = {np.abs(psi[1])**2:.3f}")
+print(f"Normalized: {np.isclose(np.sum(np.abs(psi)**2), 1)}")</pre>
+                </div>
+                
+                <p><strong>Output:</strong></p>
+                <div class="code-block">
+<pre>Classical vector: [3 4]
+Magnitude: 5.0
+
+Quantum state: [0.70710678+0.j 0.70710678+0.j]
+P(0) = 0.500
+P(1) = 0.500
+Total probability = 1.000
+
+Complex quantum state: [0.6+0.j  0. +0.8j]
+P(0) = 0.360
+P(1) = 0.640
+Normalized: True</pre>
+                </div>
+            </div>
+            
+            <div class="section full-width">
+                <h2>Key Takeaways</h2>
+                
+                <ul>
+                    <li>Vectors are the mathematical foundation of quantum computing</li>
+                    <li>Quantum states are represented as vectors in complex Hilbert space</li>
+                    <li>Vector components are complex probability amplitudes</li>
+                    <li>The square of amplitude magnitude gives measurement probability</li>
+                    <li>Normalization ensures total probability equals 1</li>
+                    <li>Vector operations (addition, inner product) have direct quantum interpretations</li>
+                    <li>Understanding vectors is essential for understanding quantum algorithms</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="../index.html" class="btn">← Back to Index</a>
+            <a href="../02-definition/index.html" class="btn">Next: Mathematical Definition →</a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let vectors = [];
+        let particles = [];
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a1a);
+            scene.fog = new THREE.Fog(0x0a0a1a, 10, 50);
+            
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(
+                60,
+                container.clientWidth / container.clientHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(8, 6, 12);
+            
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+            
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const pointLight1 = new THREE.PointLight(0x00aaff, 1, 50);
+            pointLight1.position.set(10, 10, 10);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0xff00aa, 1, 50);
+            pointLight2.position.set(-10, 5, -10);
+            scene.add(pointLight2);
+            
+            // Create scene
+            createCoordinateSystem();
+            createQuantumVectors();
+            createParticles();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize, false);
+            
+            // Start animation
+            animate();
+        }
+        
+        function createCoordinateSystem() {
+            // Grid
+            const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            // Axes
+            const axesHelper = new THREE.AxesHelper(6);
+            scene.add(axesHelper);
+            
+            // Axis labels
+            const loader = new THREE.FontLoader();
+            
+            // Create axis lines with labels
+            createAxisLine(new THREE.Vector3(6, 0, 0), 0xff0000, 'X');
+            createAxisLine(new THREE.Vector3(0, 6, 0), 0x00ff00, 'Y');
+            createAxisLine(new THREE.Vector3(0, 0, 6), 0x0000ff, 'Z');
+        }
+        
+        function createAxisLine(end, color, label) {
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, 0, 0),
+                end
+            ]);
+            const material = new THREE.LineBasicMaterial({ color: color, linewidth: 2 });
+            const line = new THREE.Line(geometry, material);
+            scene.add(line);
+        }
+        
+        function createQuantumVectors() {
+            // Create vectors representing different quantum states
+            const vectorConfigs = [
+                { x: 4, y: 0, z: 3, color: 0x00aaff, label: '|ψ₁⟩' },
+                { x: -3, y: 0, z: 4, color: 0xff00aa, label: '|ψ₂⟩' },
+                { x: 2, y: 0, z: -3, color: 0x00ff00, label: '|ψ₃⟩' },
+                { x: 3, y: 0, z: 2, color: 0xffaa00, label: '|ψ₄⟩' }
+            ];
+            
+            vectorConfigs.forEach(config => {
+                const vector = createVector(config.x, config.y, config.z, config.color);
+                vectors.push(vector);
+            });
+        }
+        
+        function createVector(x, y, z, color) {
+            const group = new THREE.Group();
+            
+            // Vector line
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(x, y, z)
+            ]);
+            
+            const material = new THREE.LineBasicMaterial({ 
+                color: color, 
+                linewidth: 3,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const line = new THREE.Line(geometry, material);
+            group.add(line);
+            
+            // Arrow head (cone)
+            const coneGeometry = new THREE.ConeGeometry(0.3, 0.8, 16);
+            const coneMaterial = new THREE.MeshPhongMaterial({ 
+                color: color,
+                emissive: color,
+                emissiveIntensity: 0.3
+            });
+            const cone = new THREE.Mesh(coneGeometry, coneMaterial);
+            
+            // Position and orient cone
+            cone.position.set(x, y, z);
+            const direction = new THREE.Vector3(x, y, z).normalize();
+            const up = new THREE.Vector3(0, 1, 0);
+            const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
+            cone.quaternion.copy(quaternion);
+            
+            group.add(cone);
+            
+            // Add glowing sphere at tip
+            const sphereGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+            const sphereMaterial = new THREE.MeshPhongMaterial({
+                color: color,
+                emissive: color,
+                emissiveIntensity: 0.5
+            });
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.position.set(x, y, z);
+            group.add(sphere);
+            
+            scene.add(group);
+            return group;
+        }
+        
+        function createParticles() {
+            const particleCount = 500;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                positions[i3] = (Math.random() - 0.5) * 30;
+                positions[i3 + 1] = (Math.random() - 0.5) * 30;
+                positions[i3 + 2] = (Math.random() - 0.5) * 30;
+                
+                const color = new THREE.Color();
+                color.setHSL(Math.random(), 0.8, 0.6);
+                colors[i3] = color.r;
+                colors[i3 + 1] = color.g;
+                colors[i3 + 2] = color.b;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.1,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6
+            });
+            
+            const particleSystem = new THREE.Points(geometry, material);
+            scene.add(particleSystem);
+            particles.push(particleSystem);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            // Rotate vectors
+            vectors.forEach((vector, index) => {
+                vector.rotation.y = time * (0.3 + index * 0.1);
+            });
+            
+            // Animate particles
+            particles.forEach(particleSystem => {
+                particleSystem.rotation.y = time * 0.05;
+                particleSystem.rotation.x = time * 0.03;
+            });
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

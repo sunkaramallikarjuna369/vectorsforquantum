@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vectors in Quantum Computing - Interactive 3D Guide</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+        
+        #canvas-container {
+            height: 500px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .concept-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .concept-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .concept-title {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .concept-description {
+            font-size: 0.95em;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .intro-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        
+        .highlight {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📐 Vectors in Quantum Computing</h1>
+            <p class="subtitle">Interactive 3D Visualizations & Comprehensive Guide</p>
+        </header>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="intro-section">
+            <h2>Welcome to Vectors in Quantum Computing!</h2>
+            <p>This interactive guide explores the fundamental role of <span class="highlight">vectors</span> in quantum computing. Vectors are the mathematical foundation that represents quantum states, transformations, and measurements.</p>
+            
+            <p style="margin-top: 20px;">In quantum computing:</p>
+            <ul>
+                <li><strong>Quantum states</strong> are represented as vectors in complex Hilbert space</li>
+                <li><strong>Quantum gates</strong> are unitary transformations acting on state vectors</li>
+                <li><strong>Measurements</strong> are inner products between state vectors</li>
+                <li><strong>Entanglement</strong> is represented through multi-qubit vector spaces</li>
+            </ul>
+            
+            <p style="margin-top: 20px;">Each concept includes:</p>
+            <ul>
+                <li>🎨 Interactive 3D visualizations using Three.js</li>
+                <li>🐍 Python code demonstrations with NumPy</li>
+                <li>📊 Mathematical foundations and formulas</li>
+                <li>🔬 Quantum computing applications</li>
+                <li>💡 Intuitive explanations and examples</li>
+            </ul>
+        </div>
+        
+        <h2 style="text-align: center; margin-bottom: 30px;">Explore All 15 Concepts</h2>
+        
+        <div class="concepts-grid">
+            <a href="01-introduction/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">01</div>
+                    <div class="concept-title">Introduction</div>
+                    <div class="concept-description">Vectors as the backbone of quantum mechanics. Understanding quantum states as vectors in Hilbert space.</div>
+                </div>
+            </a>
+            
+            <a href="02-definition/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">02</div>
+                    <div class="concept-title">Mathematical Definition</div>
+                    <div class="concept-description">Formal definition of vectors, dimensions, components, and quantum interpretation.</div>
+                </div>
+            </a>
+            
+            <a href="03-addition-subtraction/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">03</div>
+                    <div class="concept-title">Addition & Subtraction</div>
+                    <div class="concept-description">Vector addition represents superposition in quantum computing. Creating quantum states through linear combinations.</div>
+                </div>
+            </a>
+            
+            <a href="04-scalar-multiplication/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">04</div>
+                    <div class="concept-title">Scalar Multiplication</div>
+                    <div class="concept-description">Complex phase multiplication and its effect on quantum states. Understanding global vs relative phases.</div>
+                </div>
+            </a>
+            
+            <a href="05-inner-product/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">05</div>
+                    <div class="concept-title">Inner Product</div>
+                    <div class="concept-description">Dot product measures overlap between vectors. Probability amplitudes in quantum mechanics.</div>
+                </div>
+            </a>
+            
+            <a href="06-norm/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">06</div>
+                    <div class="concept-title">Norm (Magnitude)</div>
+                    <div class="concept-description">Vector length and normalization. Ensuring total probability equals 1 in quantum states.</div>
+                </div>
+            </a>
+            
+            <a href="07-basis-vectors/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">07</div>
+                    <div class="concept-title">Basis Vectors</div>
+                    <div class="concept-description">Computational basis |0⟩ and |1⟩. Expressing quantum states as weighted combinations.</div>
+                </div>
+            </a>
+            
+            <a href="08-orthogonality/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">08</div>
+                    <div class="concept-title">Orthogonality</div>
+                    <div class="concept-description">Orthogonal vectors represent mutually exclusive quantum states. Orthonormal bases in quantum computing.</div>
+                </div>
+            </a>
+            
+            <a href="09-linear-independence/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">09</div>
+                    <div class="concept-title">Linear Independence</div>
+                    <div class="concept-description">Independent basis vectors span the Hilbert space. Any quantum state as a linear combination.</div>
+                </div>
+            </a>
+            
+            <a href="10-multi-qubit/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">10</div>
+                    <div class="concept-title">Multi-Qubit Systems</div>
+                    <div class="concept-description">Tensor products create multi-qubit spaces. Bell states and quantum entanglement.</div>
+                </div>
+            </a>
+            
+            <a href="11-transformations/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">11</div>
+                    <div class="concept-title">Vector Transformations</div>
+                    <div class="concept-description">Quantum gates as unitary transformations. Hadamard, Pauli, and rotation gates.</div>
+                </div>
+            </a>
+            
+            <a href="12-outer-product/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">12</div>
+                    <div class="concept-title">Outer Product</div>
+                    <div class="concept-description">Outer products form matrices. Density matrices for quantum state representation.</div>
+                </div>
+            </a>
+            
+            <a href="13-bloch-sphere/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">13</div>
+                    <div class="concept-title">Bloch Sphere</div>
+                    <div class="concept-description">3D geometric representation of qubit states. Visualizing quantum states and rotations.</div>
+                </div>
+            </a>
+            
+            <a href="14-exercises/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">14</div>
+                    <div class="concept-title">Exercises</div>
+                    <div class="concept-description">Practice problems with step-by-step solutions. Verify orthogonality, normalization, and entanglement.</div>
+                </div>
+            </a>
+            
+            <a href="15-summary/index.html">
+                <div class="concept-card">
+                    <div class="concept-number">15</div>
+                    <div class="concept-title">Summary</div>
+                    <div class="concept-description">Complete overview with interactive table. Quick reference for all vector concepts.</div>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer;
+        let vectors = [];
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(5, 5, 10);
+            camera.lookAt(0, 0, 0);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            createScene();
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.8, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+        
+        function createScene() {
+            const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            // Create multiple vectors representing quantum states
+            const vectorData = [
+                { x: 3, y: 0, z: 4, color: 0x00aaff },
+                { x: -2, y: 0, z: 3, color: 0xff00aa },
+                { x: 1, y: 0, z: -2, color: 0x00ff00 },
+                { x: 4, y: 0, z: 1, color: 0xffaa00 }
+            ];
+            
+            vectorData.forEach(data => {
+                const vector = createVector(data.x, data.y, data.z, data.color);
+                vectors.push(vector);
+            });
+        }
+        
+        function createVector(x, y, z, color) {
+            const group = new THREE.Group();
+            
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(x, y, z)
+            ]);
+            
+            const line = new THREE.Line(
+                geometry,
+                new THREE.LineBasicMaterial({ color: color, linewidth: 3 })
+            );
+            group.add(line);
+            
+            const coneGeometry = new THREE.ConeGeometry(0.2, 0.6, 16);
+            const coneMaterial = new THREE.MeshPhongMaterial({ color: color });
+            const cone = new THREE.Mesh(coneGeometry, coneMaterial);
+            
+            const length = Math.sqrt(x*x + y*y + z*z);
+            cone.position.set(x, y, z);
+            
+            const direction = new THREE.Vector3(x, y, z).normalize();
+            const up = new THREE.Vector3(0, 1, 0);
+            const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
+            cone.quaternion.copy(quaternion);
+            
+            group.add(cone);
+            
+            scene.add(group);
+            return group;
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            camera.position.x = Math.cos(time * 0.2) * 10;
+            camera.position.z = Math.sin(time * 0.2) * 10;
+            camera.lookAt(0, 0, 0);
+            
+            vectors.forEach((vector, index) => {
+                vector.rotation.y = time * (0.5 + index * 0.1);
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
