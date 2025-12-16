@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>05 - Inner Product</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .interactive-controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .result-display {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 1.2em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⟨·|·⟩ Inner Product</h1>
+            <p>Measuring Similarity and Quantum Measurement</p>
+        </header>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="interactive-controls">
+            <h3>Interactive Inner Product Calculator</h3>
+            <p>Adjust the vectors to see how their inner product changes:</p>
+            
+            <div class="slider-container">
+                <label>Vector v - X Component: <span class="value-display" id="v1x-value">3.0</span></label>
+                <input type="range" id="v1x" min="-5" max="5" step="0.5" value="3">
+            </div>
+            
+            <div class="slider-container">
+                <label>Vector v - Y Component: <span class="value-display" id="v1y-value">4.0</span></label>
+                <input type="range" id="v1y" min="-5" max="5" step="0.5" value="4">
+            </div>
+            
+            <div class="slider-container">
+                <label>Vector w - X Component: <span class="value-display" id="v2x-value">1.0</span></label>
+                <input type="range" id="v2x" min="-5" max="5" step="0.5" value="1">
+            </div>
+            
+            <div class="slider-container">
+                <label>Vector w - Y Component: <span class="value-display" id="v2y-value">2.0</span></label>
+                <input type="range" id="v2y" min="-5" max="5" step="0.5" value="2">
+            </div>
+            
+            <div class="result-display">
+                Inner Product ⟨v|w⟩ = <span id="inner-product-result">11.0</span>
+            </div>
+            
+            <div class="result-display">
+                Angle between vectors: <span id="angle-result">36.9°</span>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="panel">
+                <h2>Definition</h2>
+                <p>The <span class="highlight">inner product</span> (or dot product) measures similarity between vectors:</p>
+                
+                <h3>Real Vectors</h3>
+                <div class="formula">
+                    v · w = v₁w₁ + v₂w₂ + ... + vₙwₙ
+                </div>
+                
+                <h3>Complex Vectors (Quantum)</h3>
+                <div class="formula">
+                    ⟨v|w⟩ = v₁*w₁ + v₂*w₂ + ... + vₙ*wₙ
+                </div>
+                <p>Where * denotes complex conjugate</p>
+                
+                <div class="example-box">
+                    <h3>Example: Real Vectors</h3>
+                    <p>v = [3, 4]ᵀ, w = [1, 2]ᵀ</p>
+                    <div class="formula">
+                        v · w = (3)(1) + (4)(2) = 3 + 8 = 11
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Bra-Ket Notation</h2>
+                <p>In quantum computing, we use Dirac's bra-ket notation:</p>
+                
+                <ul>
+                    <li><strong>Ket:</strong> |ψ⟩ is a column vector</li>
+                    <li><strong>Bra:</strong> ⟨ψ| is a row vector (conjugate transpose)</li>
+                    <li><strong>Inner Product:</strong> ⟨ψ|φ⟩</li>
+                </ul>
+                
+                <div class="formula">
+                    ⟨ψ|φ⟩ = ψ₁*φ₁ + ψ₂*φ₂ + ... + ψₙ*φₙ
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example</h3>
+                    <p>|ψ⟩ = [1/√2, 1/√2]ᵀ</p>
+                    <p>|φ⟩ = [1, 0]ᵀ</p>
+                    <div class="formula">
+                        ⟨ψ|φ⟩ = (1/√2)*(1) + (1/√2)*(0) = 1/√2
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Geometric Interpretation</h2>
+                <p>The inner product relates to the angle between vectors:</p>
+                
+                <div class="formula">
+                    v · w = |v| |w| cos(θ)
+                </div>
+                
+                <p>Where θ is the angle between v and w</p>
+                
+                <h3>Special Cases</h3>
+                <ul>
+                    <li><strong>θ = 0°:</strong> v · w = |v| |w| (parallel)</li>
+                    <li><strong>θ = 90°:</strong> v · w = 0 (orthogonal)</li>
+                    <li><strong>θ = 180°:</strong> v · w = -|v| |w| (opposite)</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h3>Finding the Angle</h3>
+                    <div class="formula">
+                        cos(θ) = (v · w) / (|v| |w|)
+                    </div>
+                    <div class="formula">
+                        θ = arccos((v · w) / (|v| |w|))
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Python Implementation</h2>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+# Real vectors<br>
+v = np.array([[3], [4]], dtype=float)<br>
+w = np.array([[1], [2]], dtype=float)<br>
+<br>
+# Inner product<br>
+inner_prod = np.vdot(v, w)<br>
+print(f"v · w = {inner_prod}")<br>
+# Output: 11.0<br>
+<br>
+# Complex vectors<br>
+psi = np.array([[1/np.sqrt(2)], [1/np.sqrt(2)]], dtype=complex)<br>
+phi = np.array([[1], [0]], dtype=complex)<br>
+<br>
+# Inner product (bra-ket)<br>
+inner_prod_complex = np.vdot(psi, phi)<br>
+print(f"⟨ψ|φ⟩ = {inner_prod_complex}")<br>
+# Output: (0.707+0j)
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Properties of Inner Product</h2>
+            
+            <div class="content-grid">
+                <div class="example-box">
+                    <h3>1. Conjugate Symmetry</h3>
+                    <div class="formula">
+                        ⟨v|w⟩ = ⟨w|v⟩*
+                    </div>
+                    <p>For real vectors: v · w = w · v</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>2. Linearity in Second Argument</h3>
+                    <div class="formula">
+                        ⟨v|αw + βu⟩ = α⟨v|w⟩ + β⟨v|u⟩
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <h3>3. Positive Definiteness</h3>
+                    <div class="formula">
+                        ⟨v|v⟩ ≥ 0
+                    </div>
+                    <p>⟨v|v⟩ = 0 if and only if v = 0</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>4. Norm Relationship</h3>
+                    <div class="formula">
+                        ||v|| = √⟨v|v⟩
+                    </div>
+                    <p>Inner product with itself gives squared norm</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Quantum Measurement</h2>
+            <p>The inner product is central to quantum measurement!</p>
+            
+            <h3>Measurement Probability</h3>
+            <p>The probability of measuring state |ψ⟩ in basis state |φ⟩:</p>
+            <div class="formula">
+                P(φ) = |⟨φ|ψ⟩|²
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Measuring |+⟩ in Computational Basis</h3>
+                <p>|+⟩ = (1/√2)|0⟩ + (1/√2)|1⟩</p>
+                
+                <p>Probability of measuring |0⟩:</p>
+                <div class="formula">
+                    P(0) = |⟨0|+⟩|² = |(1/√2)|² = 1/2 = 50%
+                </div>
+                
+                <p>Probability of measuring |1⟩:</p>
+                <div class="formula">
+                    P(1) = |⟨1|+⟩|² = |(1/√2)|² = 1/2 = 50%
+                </div>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+zero = np.array([[1], [0]], dtype=complex)<br>
+one = np.array([[0], [1]], dtype=complex)<br>
+plus = (1/np.sqrt(2)) * (zero + one)<br>
+<br>
+# Measurement probabilities<br>
+prob_0 = np.abs(np.vdot(zero, plus))**2<br>
+prob_1 = np.abs(np.vdot(one, plus))**2<br>
+<br>
+print(f"P(0) = {prob_0:.3f}")  # 0.500<br>
+print(f"P(1) = {prob_1:.3f}")  # 0.500
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Orthogonality</h2>
+            <p>Two vectors are <span class="highlight">orthogonal</span> if their inner product is zero:</p>
+            <div class="formula">
+                ⟨v|w⟩ = 0 ⟹ v ⊥ w
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Computational Basis States</h3>
+                <p>|0⟩ = [1, 0]ᵀ, |1⟩ = [0, 1]ᵀ</p>
+                <div class="formula">
+                    ⟨0|1⟩ = (1)(0) + (0)(1) = 0
+                </div>
+                <p>The basis states are orthogonal!</p>
+            </div>
+            
+            <h3>Orthonormal Basis</h3>
+            <p>A set of vectors is <span class="highlight">orthonormal</span> if:</p>
+            <ul>
+                <li>All vectors are normalized: ⟨vᵢ|vᵢ⟩ = 1</li>
+                <li>All pairs are orthogonal: ⟨vᵢ|vⱼ⟩ = 0 for i ≠ j</li>
+            </ul>
+            
+            <div class="formula">
+                ⟨vᵢ|vⱼ⟩ = δᵢⱼ
+            </div>
+            <p>Where δᵢⱼ is the Kronecker delta (1 if i=j, 0 otherwise)</p>
+        </div>
+        
+        <div class="panel">
+            <h2>Complex Inner Product Examples</h2>
+            
+            <div class="content-grid">
+                <div class="example-box">
+                    <h3>Example 1: Real Components</h3>
+                    <p>|ψ⟩ = [0.6, 0.8]ᵀ</p>
+                    <p>|φ⟩ = [0.8, 0.6]ᵀ</p>
+                    <div class="formula">
+                        ⟨ψ|φ⟩ = (0.6)(0.8) + (0.8)(0.6) = 0.96
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 2: Complex Components</h3>
+                    <p>|ψ⟩ = [1/√2, i/√2]ᵀ</p>
+                    <p>|φ⟩ = [1/√2, 1/√2]ᵀ</p>
+                    <div class="formula">
+                        ⟨ψ|φ⟩ = (1/√2)*(1/√2) + (-i/√2)*(1/√2)
+                    </div>
+                    <div class="formula">
+                        = 1/2 - i/2
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 3: Orthogonal States</h3>
+                    <p>|+⟩ = (1/√2)(|0⟩ + |1⟩)</p>
+                    <p>|-⟩ = (1/√2)(|0⟩ - |1⟩)</p>
+                    <div class="formula">
+                        ⟨+|-⟩ = (1/2)(1 - 1) = 0
+                    </div>
+                    <p>|+⟩ and |-⟩ are orthogonal!</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 4: Self Inner Product</h3>
+                    <p>|ψ⟩ = [0.6, 0.8]ᵀ</p>
+                    <div class="formula">
+                        ⟨ψ|ψ⟩ = (0.6)² + (0.8)² = 1
+                    </div>
+                    <p>For normalized states: ⟨ψ|ψ⟩ = 1</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Cauchy-Schwarz Inequality</h2>
+            <p>A fundamental inequality for inner products:</p>
+            <div class="formula">
+                |⟨v|w⟩| ≤ ||v|| ||w||
+            </div>
+            
+            <p>Equality holds when v and w are parallel</p>
+            
+            <div class="example-box">
+                <h3>Example</h3>
+                <p>v = [3, 4]ᵀ, w = [1, 2]ᵀ</p>
+                <p>⟨v|w⟩ = 11</p>
+                <p>||v|| = 5, ||w|| = √5 ≈ 2.236</p>
+                <div class="formula">
+                    |11| ≤ (5)(2.236) = 11.18 ✓
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Applications</h2>
+            
+            <h3>1. Quantum State Overlap</h3>
+            <p>|⟨ψ|φ⟩|² measures how similar two quantum states are</p>
+            <ul>
+                <li>|⟨ψ|φ⟩|² = 1: identical states</li>
+                <li>|⟨ψ|φ⟩|² = 0: orthogonal states</li>
+                <li>0 < |⟨ψ|φ⟩|² < 1: partially overlapping</li>
+            </ul>
+            
+            <h3>2. Expectation Values</h3>
+            <p>Expected value of observable A in state |ψ⟩:</p>
+            <div class="formula">
+                ⟨A⟩ = ⟨ψ|A|ψ⟩
+            </div>
+            
+            <h3>3. Projection</h3>
+            <p>Project |ψ⟩ onto |φ⟩:</p>
+            <div class="formula">
+                proj_φ(ψ) = ⟨φ|ψ⟩|φ⟩
+            </div>
+            
+            <h3>4. Gram-Schmidt Orthogonalization</h3>
+            <p>Create orthonormal basis from arbitrary vectors using inner products</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="../04-scalar-multiplication/index.html" class="btn">← Previous: Scalar Multiplication</a>
+            <a href="../index.html" class="btn">Home</a>
+            <a href="../06-orthogonality/index.html" class="btn">Next: Orthogonality →</a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let v1Arrow, v2Arrow;
+        let v1Sphere, v2Sphere;
+        let projectionLine;
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(10, 8, 10);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            createScene();
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.8, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            // Setup interactive controls
+            setupControls();
+            
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+        
+        function createScene() {
+            const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(10);
+            scene.add(axesHelper);
+            
+            // Create initial vectors
+            updateVectors(3, 4, 1, 2);
+        }
+        
+        function updateVectors(v1x, v1y, v2x, v2y) {
+            // Remove old objects
+            if (v1Arrow) scene.remove(v1Arrow);
+            if (v2Arrow) scene.remove(v2Arrow);
+            if (v1Sphere) scene.remove(v1Sphere);
+            if (v2Sphere) scene.remove(v2Sphere);
+            if (projectionLine) scene.remove(projectionLine);
+            
+            // Calculate inner product
+            const innerProduct = v1x * v2x + v1y * v2y;
+            
+            // Calculate magnitudes
+            const mag1 = Math.sqrt(v1x * v1x + v1y * v1y);
+            const mag2 = Math.sqrt(v2x * v2x + v2y * v2y);
+            
+            // Calculate angle
+            let angle = 0;
+            if (mag1 > 0 && mag2 > 0) {
+                const cosAngle = innerProduct / (mag1 * mag2);
+                angle = Math.acos(Math.max(-1, Math.min(1, cosAngle))) * 180 / Math.PI;
+            }
+            
+            // Update displays
+            document.getElementById('inner-product-result').textContent = innerProduct.toFixed(2);
+            document.getElementById('angle-result').textContent = angle.toFixed(1) + '°';
+            
+            // Create v1 arrow (blue)
+            if (mag1 > 0) {
+                const v1Dir = new THREE.Vector3(v1x, 0, v1y).normalize();
+                v1Arrow = new THREE.ArrowHelper(v1Dir, new THREE.Vector3(0, 0, 0), mag1, 0x0088ff, 0.5, 0.3);
+                scene.add(v1Arrow);
+                
+                const sphereGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+                v1Sphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                    color: 0x0088ff, emissive: 0x0088ff, emissiveIntensity: 0.3 
+                }));
+                v1Sphere.position.set(v1x, 0, v1y);
+                scene.add(v1Sphere);
+            }
+            
+            // Create v2 arrow (red)
+            if (mag2 > 0) {
+                const v2Dir = new THREE.Vector3(v2x, 0, v2y).normalize();
+                v2Arrow = new THREE.ArrowHelper(v2Dir, new THREE.Vector3(0, 0, 0), mag2, 0xff0088, 0.5, 0.3);
+                scene.add(v2Arrow);
+                
+                const sphereGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+                v2Sphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                    color: 0xff0088, emissive: 0xff0088, emissiveIntensity: 0.3 
+                }));
+                v2Sphere.position.set(v2x, 0, v2y);
+                scene.add(v2Sphere);
+            }
+            
+            // Draw projection of v2 onto v1
+            if (mag1 > 0 && mag2 > 0) {
+                const projLength = innerProduct / mag1;
+                const projX = (v1x / mag1) * projLength;
+                const projY = (v1y / mag1) * projLength;
+                
+                const points = [
+                    new THREE.Vector3(v2x, 0.1, v2y),
+                    new THREE.Vector3(projX, 0.1, projY)
+                ];
+                
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineDashedMaterial({ 
+                    color: 0xffff00, 
+                    dashSize: 0.3, 
+                    gapSize: 0.2,
+                    linewidth: 2
+                });
+                projectionLine = new THREE.Line(geometry, material);
+                projectionLine.computeLineDistances();
+                scene.add(projectionLine);
+                
+                // Add projection point
+                const projSphere = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.2, 16, 16),
+                    new THREE.MeshPhongMaterial({ color: 0xffff00, emissive: 0xffff00, emissiveIntensity: 0.5 })
+                );
+                projSphere.position.set(projX, 0, projY);
+                scene.add(projSphere);
+            }
+        }
+        
+        function setupControls() {
+            const sliders = ['v1x', 'v1y', 'v2x', 'v2y'];
+            
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                const display = document.getElementById(id + '-value');
+                
+                slider.addEventListener('input', function() {
+                    display.textContent = parseFloat(this.value).toFixed(1);
+                    
+                    const v1x = parseFloat(document.getElementById('v1x').value);
+                    const v1y = parseFloat(document.getElementById('v1y').value);
+                    const v2x = parseFloat(document.getElementById('v2x').value);
+                    const v2y = parseFloat(document.getElementById('v2y').value);
+                    
+                    updateVectors(v1x, v1y, v2x, v2y);
+                });
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            // Gentle bobbing animation
+            if (v1Sphere) v1Sphere.position.y = Math.sin(time) * 0.2;
+            if (v2Sphere) v2Sphere.position.y = Math.sin(time + Math.PI/2) * 0.2;
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
