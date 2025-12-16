@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Transformations - Vectors in Quantum Computing</title>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        .visualization-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        #canvas-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .gate-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .gate-btn {
+            padding: 12px;
+            background: rgba(100, 255, 218, 0.1);
+            border: 2px solid #64ffda;
+            border-radius: 8px;
+            color: #64ffda;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .gate-btn:hover {
+            background: rgba(100, 255, 218, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(100, 255, 218, 0.3);
+        }
+        
+        .gate-btn.active {
+            background: #64ffda;
+            color: #1a1a2e;
+        }
+        
+        .state-info {
+            background: rgba(100, 255, 218, 0.05);
+            border-left: 3px solid #64ffda;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .matrix-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #64ffda;
+            margin: 10px 0;
+        }
+        
+        .gate-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .gate-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        .gate-card h4 {
+            color: #64ffda;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔄 Quantum Transformations</h1>
+            <p class="subtitle">Unitary Matrices and Quantum Gates</p>
+        </header>
+
+        <nav class="nav-buttons">
+            <a href="../10-multi-qubit/index.html" class="btn btn-secondary">← Previous: Multi-Qubit Systems</a>
+            <a href="../index.html" class="btn btn-primary">🏠 Home</a>
+            <a href="../12-outer-product/index.html" class="btn btn-secondary">Next: Outer Product →</a>
+        </nav>
+
+        <div class="visualization-container">
+            <h2>Interactive Quantum Gate Visualization</h2>
+            <div id="canvas-container"></div>
+            
+            <div class="controls-panel">
+                <h3 style="color: #64ffda; margin-top: 0;">Apply Quantum Gates</h3>
+                
+                <div class="gate-buttons">
+                    <button class="gate-btn" data-gate="I">I (Identity)</button>
+                    <button class="gate-btn" data-gate="X">X (NOT)</button>
+                    <button class="gate-btn" data-gate="Y">Y</button>
+                    <button class="gate-btn" data-gate="Z">Z</button>
+                    <button class="gate-btn" data-gate="H">H (Hadamard)</button>
+                    <button class="gate-btn" data-gate="S">S (Phase)</button>
+                    <button class="gate-btn" data-gate="T">T</button>
+                    <button class="gate-btn" data-gate="Reset">Reset to |0⟩</button>
+                </div>
+                
+                <div class="state-info">
+                    <h4>Current State</h4>
+                    <p id="state-display" style="font-family: 'Courier New', monospace; color: #fff;"></p>
+                </div>
+                
+                <div class="matrix-display" id="matrix-display"></div>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2>What are Quantum Transformations?</h2>
+            <p>
+                Quantum transformations are operations that change quantum states. In quantum computing, 
+                these transformations are represented by <strong>unitary matrices</strong> that preserve 
+                the normalization of quantum states.
+            </p>
+            
+            <div class="key-point">
+                <strong>Key Property:</strong> A matrix U is unitary if U†U = I, where U† is the 
+                conjugate transpose and I is the identity matrix. Unitary transformations preserve 
+                inner products and probabilities.
+            </div>
+            
+            <div class="formula">
+                <strong>Transformation:</strong><br>
+                |ψ'⟩ = U|ψ⟩
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Unitary Matrices</h2>
+            <p>
+                Unitary matrices are the quantum analogue of rotation matrices in classical mechanics. 
+                They preserve the length of vectors (normalization) and angles between vectors (inner products).
+            </p>
+            
+            <div class="example">
+                <h3>Properties of Unitary Matrices</h3>
+                <ul>
+                    <li><strong>Preservation of norm:</strong> ||U|ψ⟩|| = ||ψ⟩||</li>
+                    <li><strong>Preservation of inner products:</strong> ⟨U|ψ⟩|U|φ⟩⟩ = ⟨ψ|φ⟩</li>
+                    <li><strong>Invertibility:</strong> U⁻¹ = U†</li>
+                    <li><strong>Determinant:</strong> |det(U)| = 1</li>
+                    <li><strong>Reversibility:</strong> All quantum operations are reversible</li>
+                </ul>
+            </div>
+            
+            <div class="formula">
+                <strong>Unitarity Condition:</strong><br>
+                U†U = UU† = I<br><br>
+                where U† = (U*)ᵀ (conjugate transpose)
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Single-Qubit Gates</h2>
+            <p>
+                Single-qubit gates are 2×2 unitary matrices that transform single-qubit states.
+            </p>
+            
+            <div class="gate-cards">
+                <div class="gate-card">
+                    <h4>Identity Gate (I)</h4>
+                    <div class="formula">
+                        I = [1  0]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;[0  1]
+                    </div>
+                    <p>Does nothing - leaves the state unchanged.</p>
+                    <p>I|ψ⟩ = |ψ⟩</p>
+                </div>
+                
+                <div class="gate-card">
+                    <h4>Pauli-X Gate (NOT)</h4>
+                    <div class="formula">
+                        X = [0  1]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;[1  0]
+                    </div>
+                    <p>Bit flip: swaps |0⟩ and |1⟩</p>
+                    <p>X|0⟩ = |1⟩, X|1⟩ = |0⟩</p>
+                </div>
+                
+                <div class="gate-card">
+                    <h4>Pauli-Y Gate</h4>
+                    <div class="formula">
+                        Y = [0  -i]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;[i   0]
+                    </div>
+                    <p>Bit flip + phase flip</p>
+                    <p>Y|0⟩ = i|1⟩, Y|1⟩ = -i|0⟩</p>
+                </div>
+                
+                <div class="gate-card">
+                    <h4>Pauli-Z Gate</h4>
+                    <div class="formula">
+                        Z = [1   0]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;[0  -1]
+                    </div>
+                    <p>Phase flip: changes sign of |1⟩</p>
+                    <p>Z|0⟩ = |0⟩, Z|1⟩ = -|1⟩</p>
+                </div>
+                
+                <div class="gate-card">
+                    <h4>Hadamard Gate (H)</h4>
+                    <div class="formula">
+                        H = (1/√2)[1   1]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1  -1]
+                    </div>
+                    <p>Creates superposition</p>
+                    <p>H|0⟩ = |+⟩, H|1⟩ = |−⟩</p>
+                </div>
+                
+                <div class="gate-card">
+                    <h4>Phase Gate (S)</h4>
+                    <div class="formula">
+                        S = [1  0]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;[0  i]
+                    </div>
+                    <p>Adds π/2 phase to |1⟩</p>
+                    <p>S|0⟩ = |0⟩, S|1⟩ = i|1⟩</p>
+                </div>
+                
+                <div class="gate-card">
+                    <h4>T Gate (π/8)</h4>
+                    <div class="formula">
+                        T = [1      0    ]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;[0  e^(iπ/4)]
+                    </div>
+                    <p>Adds π/4 phase to |1⟩</p>
+                    <p>T|0⟩ = |0⟩, T|1⟩ = e^(iπ/4)|1⟩</p>
+                </div>
+                
+                <div class="gate-card">
+                    <h4>Rotation Gates</h4>
+                    <div class="formula">
+                        Rₓ(θ), Rᵧ(θ), Rᵤ(θ)
+                    </div>
+                    <p>Rotate state by angle θ</p>
+                    <p>Around x, y, or z axis</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Gate Composition</h2>
+            <p>
+                Multiple gates can be applied sequentially. The combined effect is the product of the 
+                gate matrices (applied right to left):
+            </p>
+            
+            <div class="formula">
+                |ψ''⟩ = U₂U₁|ψ⟩
+            </div>
+            
+            <div class="example">
+                <h3>Example: H followed by Z</h3>
+                <div class="formula">
+                    Starting with |0⟩:<br>
+                    H|0⟩ = (1/√2)(|0⟩ + |1⟩) = |+⟩<br>
+                    Z(H|0⟩) = Z|+⟩ = (1/√2)(|0⟩ − |1⟩) = |−⟩<br><br>
+                    Combined: ZH|0⟩ = |−⟩
+                </div>
+            </div>
+            
+            <div class="key-point">
+                <strong>Important:</strong> Matrix multiplication is not commutative! In general, 
+                U₁U₂ ≠ U₂U₁. The order of gates matters!
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Two-Qubit Gates</h2>
+            <p>
+                Two-qubit gates are 4×4 unitary matrices that operate on two qubits simultaneously. 
+                The most important is the CNOT (Controlled-NOT) gate.
+            </p>
+            
+            <div class="example">
+                <h3>CNOT Gate (Controlled-NOT)</h3>
+                <div class="formula">
+                    CNOT = [1  0  0  0]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  1  0  0]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  0  0  1]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  0  1  0]
+                </div>
+                <p>
+                    The CNOT gate flips the target qubit if and only if the control qubit is |1⟩:
+                </p>
+                <div class="formula">
+                    CNOT|00⟩ = |00⟩<br>
+                    CNOT|01⟩ = |01⟩<br>
+                    CNOT|10⟩ = |11⟩ (target flipped)<br>
+                    CNOT|11⟩ = |10⟩ (target flipped)
+                </div>
+            </div>
+            
+            <div class="highlight">
+                <h3>Creating Entanglement</h3>
+                <p>
+                    The CNOT gate can create entanglement from separable states:
+                </p>
+                <div class="formula">
+                    Starting with |+⟩ ⊗ |0⟩ = (1/√2)(|00⟩ + |10⟩)<br>
+                    Apply CNOT:<br>
+                    CNOT(|+⟩ ⊗ |0⟩) = (1/√2)(|00⟩ + |11⟩) = |Φ⁺⟩ (Bell state!)
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Universal Gate Sets</h2>
+            <p>
+                A universal gate set is a collection of gates that can approximate any unitary transformation 
+                to arbitrary precision.
+            </p>
+            
+            <div class="key-point">
+                <strong>Solovay-Kitaev Theorem:</strong> Any single-qubit unitary can be approximated 
+                to precision ε using O(log^c(1/ε)) gates from a universal set, where c ≈ 2.
+            </div>
+            
+            <div class="highlight">
+                <h3>Common Universal Gate Sets</h3>
+                <ul>
+                    <li><strong>{H, T, CNOT}:</strong> Clifford + T gates (fault-tolerant)</li>
+                    <li><strong>{H, S, T, CNOT}:</strong> Extended Clifford gates</li>
+                    <li><strong>{Rz(θ), Rx(π/2), CNOT}:</strong> Rotation-based</li>
+                    <li><strong>{U3, CNOT}:</strong> Arbitrary single-qubit rotations</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Measurement</h2>
+            <p>
+                Measurement is a special operation that is <strong>not</strong> unitary. It collapses 
+                the quantum state to one of the basis states.
+            </p>
+            
+            <div class="formula">
+                For state |ψ⟩ = α|0⟩ + β|1⟩:<br>
+                P(measure 0) = |α|²<br>
+                P(measure 1) = |β|²<br><br>
+                After measurement:<br>
+                |ψ⟩ → |0⟩ (with probability |α|²)<br>
+                |ψ⟩ → |1⟩ (with probability |β|²)
+            </div>
+            
+            <div class="key-point">
+                <strong>Important:</strong> Measurement is irreversible and destroys superposition. 
+                This is fundamentally different from unitary gates!
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Python Implementation</h2>
+            <div class="code-block">
+                <pre><code>import numpy as np
+
+# Define quantum gates
+I = np.array([[1, 0], [0, 1]], dtype=complex)
+X = np.array([[0, 1], [1, 0]], dtype=complex)
+Y = np.array([[0, -1j], [1j, 0]], dtype=complex)
+Z = np.array([[1, 0], [0, -1]], dtype=complex)
+H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2)
+S = np.array([[1, 0], [0, 1j]], dtype=complex)
+T = np.array([[1, 0], [0, np.exp(1j*np.pi/4)]], dtype=complex)
+
+# Define initial state
+ket0 = np.array([1, 0], dtype=complex)
+
+# Apply gates
+state = ket0
+print(f"Initial: {state}")
+
+state = H @ state  # Apply Hadamard
+print(f"After H: {state}")
+
+state = S @ state  # Apply S gate
+print(f"After S: {state}")
+
+# Verify unitarity
+def is_unitary(U):
+    """Check if matrix U is unitary."""
+    I = np.eye(U.shape[0])
+    return np.allclose(U @ U.conj().T, I)
+
+print(f"H is unitary: {is_unitary(H)}")
+print(f"X is unitary: {is_unitary(X)}")</code></pre>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Applications</h2>
+            <div class="highlight">
+                <h3>1. Quantum Algorithms</h3>
+                <p>
+                    All quantum algorithms are built from sequences of quantum gates. Examples include 
+                    Grover's search, Shor's factoring, and quantum simulation.
+                </p>
+                
+                <h3>2. Quantum Error Correction</h3>
+                <p>
+                    Error correction codes use specific gate sequences to detect and correct errors 
+                    without measuring the quantum state.
+                </p>
+                
+                <h3>3. Quantum State Preparation</h3>
+                <p>
+                    Gates are used to prepare specific quantum states from the initial |0⟩ state, 
+                    including superposition and entangled states.
+                </p>
+                
+                <h3>4. Quantum Circuit Optimization</h3>
+                <p>
+                    Compiling high-level quantum algorithms into efficient gate sequences is crucial 
+                    for practical quantum computing.
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Key Takeaways</h2>
+            <div class="key-point">
+                <ul>
+                    <li>Quantum transformations are represented by unitary matrices</li>
+                    <li>Unitary matrices preserve normalization and inner products</li>
+                    <li>Single-qubit gates are 2×2 unitary matrices</li>
+                    <li>Common gates: X, Y, Z (Pauli), H (Hadamard), S, T</li>
+                    <li>Gates can be composed: U₂U₁|ψ⟩ (order matters!)</li>
+                    <li>CNOT gate creates entanglement between qubits</li>
+                    <li>Universal gate sets can approximate any unitary</li>
+                    <li>Measurement is not unitary - it collapses the state</li>
+                </ul>
+            </div>
+        </section>
+
+        <nav class="nav-buttons">
+            <a href="../10-multi-qubit/index.html" class="btn btn-secondary">← Previous: Multi-Qubit Systems</a>
+            <a href="../index.html" class="btn btn-primary">🏠 Home</a>
+            <a href="../12-outer-product/index.html" class="btn btn-secondary">Next: Outer Product →</a>
+        </nav>
+    </div>
+
+    <script>
+        // Three.js Scene Setup
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a);
+        
+        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(3, 3, 3);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+        
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        
+        // Add lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const pointLight = new THREE.PointLight(0xffffff, 1);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+        
+        // Add grid and axes
+        const gridHelper = new THREE.GridHelper(6, 6, 0x444444, 0x222222);
+        scene.add(gridHelper);
+        
+        const axesHelper = new THREE.AxesHelper(3);
+        scene.add(axesHelper);
+        
+        // State vector
+        let stateVector = null;
+        let currentState = new Float64Array([1, 0]); // Start with |0⟩
+        
+        // Quantum gates
+        const gates = {
+            I: [[1, 0], [0, 1]],
+            X: [[0, 1], [1, 0]],
+            Y: [[0, -1], [1, 0]], // Simplified for visualization
+            Z: [[1, 0], [0, -1]],
+            H: [[1/Math.sqrt(2), 1/Math.sqrt(2)], [1/Math.sqrt(2), -1/Math.sqrt(2)]],
+            S: [[1, 0], [0, 1]], // Simplified (real part only)
+            T: [[1, 0], [0, 0.707]] // Simplified (real part only)
+        };
+        
+        function applyGate(gateName) {
+            if (gateName === 'Reset') {
+                currentState = new Float64Array([1, 0]);
+            } else {
+                const gate = gates[gateName];
+                const newState = new Float64Array(2);
+                newState[0] = gate[0][0] * currentState[0] + gate[0][1] * currentState[1];
+                newState[1] = gate[1][0] * currentState[0] + gate[1][1] * currentState[1];
+                
+                // Normalize
+                const norm = Math.sqrt(newState[0]*newState[0] + newState[1]*newState[1]);
+                currentState[0] = newState[0] / norm;
+                currentState[1] = newState[1] / norm;
+            }
+            
+            updateVisualization();
+        }
+        
+        function updateVisualization() {
+            // Remove old vector
+            if (stateVector) {
+                scene.remove(stateVector);
+            }
+            
+            // Create new vector
+            const alpha = currentState[0];
+            const beta = currentState[1];
+            
+            const dir = new THREE.Vector3(alpha, beta, 0).normalize();
+            const length = 2;
+            const color = 0xff00ff;
+            
+            stateVector = new THREE.ArrowHelper(dir, new THREE.Vector3(0, 0, 0), length, color, 0.3, 0.2);
+            scene.add(stateVector);
+            
+            // Update display
+            const stateDisplay = document.getElementById('state-display');
+            stateDisplay.innerHTML = `|ψ⟩ = ${alpha.toFixed(3)}|0⟩ + ${beta.toFixed(3)}|1⟩<br>
+                                     Probabilities: P(0) = ${(alpha*alpha).toFixed(3)}, P(1) = ${(beta*beta).toFixed(3)}`;
+        }
+        
+        // Gate button handlers
+        document.querySelectorAll('.gate-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const gate = this.dataset.gate;
+                applyGate(gate);
+                
+                // Update matrix display
+                const matrixDisplay = document.getElementById('matrix-display');
+                if (gate !== 'Reset') {
+                    const gateMatrix = gates[gate];
+                    matrixDisplay.innerHTML = `<strong>${gate} Gate Matrix:</strong><br>
+                        [${gateMatrix[0][0].toFixed(3)}  ${gateMatrix[0][1].toFixed(3)}]<br>
+                        [${gateMatrix[1][0].toFixed(3)}  ${gateMatrix[1][1].toFixed(3)}]`;
+                } else {
+                    matrixDisplay.innerHTML = '<strong>State reset to |0⟩</strong>';
+                }
+                
+                // Visual feedback
+                this.classList.add('active');
+                setTimeout(() => this.classList.remove('active'), 300);
+            });
+        });
+        
+        // Initial visualization
+        updateVisualization();
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+    </script>
+</body>
+</html>
