@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02 - Mathematical Definition of Vectors</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        #canvas-container {
+            height: 600px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #87ceeb;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .formula {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .example-box {
+            background: rgba(135, 206, 235, 0.1);
+            border-left: 4px solid #87ceeb;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .highlight {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        
+        p {
+            line-height: 1.8;
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📐 Mathematical Definition of Vectors</h1>
+            <p>Formal Structure and Notation</p>
+        </header>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="content-grid">
+            <div class="panel">
+                <h2>Formal Definition</h2>
+                <p>A <span class="highlight">vector</span> is an ordered collection of real or complex numbers:</p>
+                
+                <div class="formula">
+                    v = [v₁, v₂, ..., vₙ]ᵀ
+                </div>
+                
+                <p>Where:</p>
+                <ul>
+                    <li><strong>v ∈ ℝⁿ</strong> for real vectors</li>
+                    <li><strong>v ∈ ℂⁿ</strong> for complex vectors (quantum)</li>
+                    <li><strong>n</strong> is the dimension (number of components)</li>
+                    <li><strong>v₁, v₂, ..., vₙ</strong> are the components</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h3>Classical Example (Real Vector)</h3>
+                    <div class="formula">
+                        v = [3, 4]ᵀ
+                    </div>
+                    <p>This is a 2-dimensional real vector</p>
+                    <p>v₁ = 3, v₂ = 4</p>
+                    <p>v ∈ ℝ²</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Column Vector Notation</h2>
+                <p>Vectors are typically written as <span class="highlight">column vectors</span>:</p>
+                
+                <div class="formula">
+                    v = ⎡v₁⎤<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;⎢v₂⎥<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;⎢⋮ ⎥<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;⎣vₙ⎦
+                </div>
+                
+                <p>This notation emphasizes the vertical structure.</p>
+                
+                <h3>Python Implementation</h3>
+                <div class="code-block">
+import numpy as np<br>
+<br>
+# Classical real vector<br>
+v = np.array([[3], [4]], dtype=float)<br>
+print(v)<br>
+# Output:<br>
+# [[3.]<br>
+#  [4.]]
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Quantum Ket Notation</h2>
+                <p>In quantum computing, we use <span class="highlight">Dirac notation</span>:</p>
+                
+                <div class="formula">
+                    |ψ⟩ = ⎡α⎤<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⎣β⎦
+                </div>
+                
+                <p>Where:</p>
+                <ul>
+                    <li><strong>|ψ⟩</strong> is called a "ket"</li>
+                    <li><strong>α, β ∈ ℂ</strong> are complex amplitudes</li>
+                    <li>Represents a quantum state</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h3>Qubit State Example</h3>
+                    <div class="formula">
+                        |ψ⟩ = ⎡1/√2⎤<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⎣1/√2⎦
+                    </div>
+                    <p>This represents an equal superposition state</p>
+                    <p>α = 1/√2, β = 1/√2</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Components and Dimension</h2>
+                
+                <h3>Dimension</h3>
+                <p>The <span class="highlight">dimension</span> n is the number of components:</p>
+                <ul>
+                    <li>1-qubit system: n = 2 (2D Hilbert space)</li>
+                    <li>2-qubit system: n = 4 (4D Hilbert space)</li>
+                    <li>n-qubit system: n = 2ⁿ dimensions</li>
+                </ul>
+                
+                <h3>Components</h3>
+                <p>Each component vᵢ can be:</p>
+                <ul>
+                    <li><strong>Real:</strong> vᵢ ∈ ℝ (classical physics)</li>
+                    <li><strong>Complex:</strong> vᵢ ∈ ℂ (quantum mechanics)</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h3>Complex Components</h3>
+                    <div class="formula">
+                        |ψ⟩ = ⎡0.6 + 0.2i⎤<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⎣0.5 - 0.5i⎦
+                    </div>
+                    <p>Both components are complex numbers</p>
+                    <p>This is typical in quantum computing!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Classical vs Quantum Vectors</h2>
+            
+            <div class="content-grid">
+                <div>
+                    <h3>Classical Vectors (Real)</h3>
+                    <div class="example-box">
+                        <p><strong>Velocity Vector:</strong></p>
+                        <div class="formula">
+                            v = [3, 4]ᵀ m/s
+                        </div>
+                        <p>Components: vₓ = 3 m/s, vᵧ = 4 m/s</p>
+                        <p>Magnitude: |v| = 5 m/s</p>
+                        <p>Direction: tan⁻¹(4/3) ≈ 53.1°</p>
+                    </div>
+                    
+                    <div class="code-block">
+import numpy as np<br>
+<br>
+v = np.array([[3], [4]], dtype=float)<br>
+magnitude = np.linalg.norm(v)<br>
+print(f"Magnitude: {magnitude}")  # 5.0
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Quantum Vectors (Complex)</h3>
+                    <div class="example-box">
+                        <p><strong>Qubit State:</strong></p>
+                        <div class="formula">
+                            |ψ⟩ = ⎡α⎤<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⎣β⎦
+                        </div>
+                        <p>Components: α, β ∈ ℂ</p>
+                        <p>Normalization: |α|² + |β|² = 1</p>
+                        <p>Probabilities: P(0) = |α|², P(1) = |β|²</p>
+                    </div>
+                    
+                    <div class="code-block">
+import numpy as np<br>
+<br>
+psi = np.array([[1/np.sqrt(2)],<br>
+                [1/np.sqrt(2)]], dtype=complex)<br>
+norm = np.linalg.norm(psi)<br>
+print(f"Norm: {norm}")  # 1.0
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Quantum Interpretation</h2>
+            <p>In quantum computing, vectors have special meaning:</p>
+            
+            <h3>Probability Amplitudes</h3>
+            <p>Each component represents a <span class="highlight">probability amplitude</span>:</p>
+            <div class="formula">
+                |ψ⟩ = α|0⟩ + β|1⟩
+            </div>
+            <p>Where:</p>
+            <ul>
+                <li><strong>α</strong> is the amplitude for state |0⟩</li>
+                <li><strong>β</strong> is the amplitude for state |1⟩</li>
+                <li><strong>|α|²</strong> is the probability of measuring 0</li>
+                <li><strong>|β|²</strong> is the probability of measuring 1</li>
+            </ul>
+            
+            <h3>Born Rule</h3>
+            <p>The probability of measuring a state is given by:</p>
+            <div class="formula">
+                P(outcome) = |amplitude|²
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Equal Superposition</h3>
+                <div class="formula">
+                    |+⟩ = ⎡1/√2⎤<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⎣1/√2⎦
+                </div>
+                <p>Probabilities:</p>
+                <ul>
+                    <li>P(0) = |1/√2|² = 1/2 = 50%</li>
+                    <li>P(1) = |1/√2|² = 1/2 = 50%</li>
+                </ul>
+                <p>Equal probability of measuring 0 or 1!</p>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+plus = np.array([[1/np.sqrt(2)],<br>
+                 [1/np.sqrt(2)]], dtype=complex)<br>
+<br>
+prob_0 = np.abs(plus[0, 0])**2<br>
+prob_1 = np.abs(plus[1, 0])**2<br>
+<br>
+print(f"P(0) = {prob_0:.3f}")  # 0.500<br>
+print(f"P(1) = {prob_1:.3f}")  # 0.500
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Basis States</h2>
+            <p>The computational basis states are:</p>
+            
+            <div class="content-grid">
+                <div class="example-box">
+                    <h3>State |0⟩</h3>
+                    <div class="formula">
+                        |0⟩ = ⎡1⎤<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⎣0⎦
+                    </div>
+                    <p>Represents the "zero" state</p>
+                    <p>100% probability of measuring 0</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>State |1⟩</h3>
+                    <div class="formula">
+                        |1⟩ = ⎡0⎤<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⎣1⎦
+                    </div>
+                    <p>Represents the "one" state</p>
+                    <p>100% probability of measuring 1</p>
+                </div>
+            </div>
+            
+            <h3>General Qubit State</h3>
+            <p>Any qubit state can be written as a linear combination:</p>
+            <div class="formula">
+                |ψ⟩ = α|0⟩ + β|1⟩ = ⎡α⎤<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⎣β⎦
+            </div>
+            
+            <div class="code-block">
+import numpy as np<br>
+<br>
+# Basis states<br>
+zero = np.array([[1], [0]], dtype=complex)<br>
+one = np.array([[0], [1]], dtype=complex)<br>
+<br>
+# General state<br>
+alpha = 0.6<br>
+beta = 0.8<br>
+psi = alpha * zero + beta * one<br>
+<br>
+print("State |ψ⟩:")<br>
+print(psi)<br>
+# [[0.6]<br>
+#  [0.8]]
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Key Properties</h2>
+            
+            <h3>1. Ordered Collection</h3>
+            <p>The order of components matters:</p>
+            <div class="formula">
+                [3, 4]ᵀ ≠ [4, 3]ᵀ
+            </div>
+            
+            <h3>2. Fixed Dimension</h3>
+            <p>All vectors in a space have the same dimension:</p>
+            <ul>
+                <li>Cannot add vectors of different dimensions</li>
+                <li>Single qubit: always 2D</li>
+                <li>Two qubits: always 4D</li>
+            </ul>
+            
+            <h3>3. Complex Components</h3>
+            <p>Quantum vectors have complex components:</p>
+            <ul>
+                <li>Enables phase information</li>
+                <li>Required for quantum interference</li>
+                <li>Essential for quantum algorithms</li>
+            </ul>
+            
+            <h3>4. Normalization</h3>
+            <p>Quantum state vectors must be normalized:</p>
+            <div class="formula">
+                ||ψ⟩|| = √(|α|² + |β|²) = 1
+            </div>
+            <p>This ensures total probability = 1</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="../01-introduction/index.html" class="btn">← Previous: Introduction</a>
+            <a href="../index.html" class="btn">Home</a>
+            <a href="../03-addition-subtraction/index.html" class="btn">Next: Addition & Subtraction →</a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let vectors = [];
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(8, 6, 8);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            createScene();
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.8, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+        
+        function createScene() {
+            const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            // Create example vectors with different properties
+            const vectorExamples = [
+                {x: 3, y: 0, z: 4, color: 0x00aaff, label: "Real Vector [3,4]"},
+                {x: -2, y: 0, z: 3, color: 0xff00aa, label: "Real Vector [-2,3]"},
+                {x: 1, y: 0, z: -2, color: 0x00ff00, label: "Real Vector [1,-2]"},
+                {x: 4, y: 0, z: 1, color: 0xffaa00, label: "Real Vector [4,1]"}
+            ];
+            
+            vectorExamples.forEach((vec, index) => {
+                // Create arrow for vector
+                const dir = new THREE.Vector3(vec.x, vec.y, vec.z).normalize();
+                const length = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+                const origin = new THREE.Vector3(0, 0, 0);
+                
+                const arrowHelper = new THREE.ArrowHelper(dir, origin, length, vec.color, 0.5, 0.3);
+                scene.add(arrowHelper);
+                
+                // Create sphere at endpoint
+                const sphereGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+                const sphereMaterial = new THREE.MeshPhongMaterial({ 
+                    color: vec.color,
+                    emissive: vec.color,
+                    emissiveIntensity: 0.3
+                });
+                const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                sphere.position.set(vec.x, vec.y, vec.z);
+                scene.add(sphere);
+                
+                vectors.push({arrow: arrowHelper, sphere: sphere, basePos: {x: vec.x, y: vec.y, z: vec.z}});
+            });
+            
+            // Add text labels (using sprites)
+            addLabel("Origin (0,0)", 0, -0.5, 0, 0xffffff);
+            addLabel("Real Axis", 5, 0, 0, 0xff0000);
+            addLabel("Imaginary Axis", 0, 0, 5, 0x0000ff);
+        }
+        
+        function addLabel(text, x, y, z, color) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 64;
+            
+            context.fillStyle = '#' + color.toString(16).padStart(6, '0');
+            context.font = 'Bold 24px Arial';
+            context.textAlign = 'center';
+            context.fillText(text, 128, 40);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.position.set(x, y, z);
+            sprite.scale.set(2, 0.5, 1);
+            scene.add(sprite);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            // Animate vectors with gentle bobbing motion
+            vectors.forEach((vec, i) => {
+                const offset = i * Math.PI / 2;
+                vec.sphere.position.y = vec.basePos.y + Math.sin(time + offset) * 0.3;
+            });
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

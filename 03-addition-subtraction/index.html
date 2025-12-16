@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>03 - Vector Addition and Subtraction</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .interactive-controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>➕ Vector Addition and Subtraction</h1>
+            <p>Combining Vectors and Quantum Superposition</p>
+        </header>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="interactive-controls">
+            <h3>Interactive Vector Addition</h3>
+            <p>Adjust the sliders to see how vectors add:</p>
+            
+            <div class="slider-container">
+                <label>Vector v₁ - X Component: <span class="value-display" id="v1x-value">3.0</span></label>
+                <input type="range" id="v1x" min="-5" max="5" step="0.5" value="3">
+            </div>
+            
+            <div class="slider-container">
+                <label>Vector v₁ - Y Component: <span class="value-display" id="v1y-value">4.0</span></label>
+                <input type="range" id="v1y" min="-5" max="5" step="0.5" value="4">
+            </div>
+            
+            <div class="slider-container">
+                <label>Vector v₂ - X Component: <span class="value-display" id="v2x-value">1.0</span></label>
+                <input type="range" id="v2x" min="-5" max="5" step="0.5" value="1">
+            </div>
+            
+            <div class="slider-container">
+                <label>Vector v₂ - Y Component: <span class="value-display" id="v2y-value">-2.0</span></label>
+                <input type="range" id="v2y" min="-5" max="5" step="0.5" value="-2">
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="panel">
+                <h2>Vector Addition</h2>
+                <p>To add two vectors, add their corresponding components:</p>
+                
+                <div class="formula">
+                    v + w = [v₁ + w₁, v₂ + w₂, ..., vₙ + wₙ]ᵀ
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example</h3>
+                    <p>v = [3, 4]ᵀ, w = [1, -2]ᵀ</p>
+                    <div class="formula">
+                        v + w = [3+1, 4+(-2)]ᵀ = [4, 2]ᵀ
+                    </div>
+                </div>
+                
+                <h3>Properties</h3>
+                <ul>
+                    <li><strong>Commutative:</strong> v + w = w + v</li>
+                    <li><strong>Associative:</strong> (u + v) + w = u + (v + w)</li>
+                    <li><strong>Identity:</strong> v + 0 = v</li>
+                    <li><strong>Inverse:</strong> v + (-v) = 0</li>
+                </ul>
+            </div>
+            
+            <div class="panel">
+                <h2>Vector Subtraction</h2>
+                <p>To subtract vectors, subtract their corresponding components:</p>
+                
+                <div class="formula">
+                    v - w = [v₁ - w₁, v₂ - w₂, ..., vₙ - wₙ]ᵀ
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example</h3>
+                    <p>v = [3, 4]ᵀ, w = [1, -2]ᵀ</p>
+                    <div class="formula">
+                        v - w = [3-1, 4-(-2)]ᵀ = [2, 6]ᵀ
+                    </div>
+                </div>
+                
+                <h3>Relationship to Addition</h3>
+                <p>Subtraction is addition of the negative:</p>
+                <div class="formula">
+                    v - w = v + (-w)
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Geometric Interpretation</h2>
+                <p>Vector addition follows the <span class="highlight">parallelogram rule</span>:</p>
+                
+                <h3>Tip-to-Tail Method</h3>
+                <ol>
+                    <li>Place the tail of w at the tip of v</li>
+                    <li>The sum v + w goes from the tail of v to the tip of w</li>
+                </ol>
+                
+                <h3>Parallelogram Method</h3>
+                <ol>
+                    <li>Place both vectors at the origin</li>
+                    <li>Complete the parallelogram</li>
+                    <li>The diagonal is v + w</li>
+                </ol>
+                
+                <div class="example-box">
+                    <h3>Visual Example</h3>
+                    <p>In the 3D visualization above:</p>
+                    <ul>
+                        <li><strong>Blue arrow:</strong> Vector v</li>
+                        <li><strong>Red arrow:</strong> Vector w</li>
+                        <li><strong>Green arrow:</strong> Sum v + w</li>
+                        <li><strong>Yellow arrow:</strong> Difference v - w</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Python Implementation</h2>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+# Define vectors<br>
+v = np.array([[3], [4]], dtype=float)<br>
+w = np.array([[1], [-2]], dtype=float)<br>
+<br>
+# Addition<br>
+sum_vec = v + w<br>
+print(f"v + w = {sum_vec.T[0]}")<br>
+# Output: [4. 2.]<br>
+<br>
+# Subtraction<br>
+diff_vec = v - w<br>
+print(f"v - w = {diff_vec.T[0]}")<br>
+# Output: [2. 6.]
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Quantum Superposition</h2>
+            <p>In quantum computing, vector addition represents <span class="highlight">superposition</span>!</p>
+            
+            <h3>Superposition Principle</h3>
+            <p>If |ψ₁⟩ and |ψ₂⟩ are valid quantum states, then any linear combination is also valid:</p>
+            <div class="formula">
+                |ψ⟩ = α|ψ₁⟩ + β|ψ₂⟩
+            </div>
+            <p>Where α, β ∈ ℂ and |α|² + |β|² = 1</p>
+            
+            <div class="example-box">
+                <h3>Example: |+⟩ State</h3>
+                <p>The |+⟩ state is a superposition of |0⟩ and |1⟩:</p>
+                <div class="formula">
+                    |+⟩ = (1/√2)|0⟩ + (1/√2)|1⟩
+                </div>
+                <p>This is vector addition with coefficients!</p>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+# Basis states<br>
+zero = np.array([[1], [0]], dtype=complex)<br>
+one = np.array([[0], [1]], dtype=complex)<br>
+<br>
+# Superposition<br>
+plus = (1/np.sqrt(2)) * zero + (1/np.sqrt(2)) * one<br>
+print(f"|+⟩ = {plus.T[0]}")<br>
+# Output: [0.707+0.j 0.707+0.j]
+                </div>
+            </div>
+            
+            <h3>Physical Meaning</h3>
+            <p>Superposition means the qubit exists in both states simultaneously:</p>
+            <ul>
+                <li>Not "either |0⟩ or |1⟩"</li>
+                <li>But "both |0⟩ and |1⟩ at the same time"</li>
+                <li>Measurement collapses to one state</li>
+                <li>Probabilities determined by amplitudes</li>
+            </ul>
+        </div>
+        
+        <div class="panel">
+            <h2>Quantum Examples</h2>
+            
+            <div class="content-grid">
+                <div class="example-box">
+                    <h3>Example 1: Equal Superposition</h3>
+                    <div class="formula">
+                        |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩
+                    </div>
+                    <p>Result: [0.707, 0.707]ᵀ</p>
+                    <p>Probabilities: P(0) = 50%, P(1) = 50%</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 2: Unequal Superposition</h3>
+                    <div class="formula">
+                        |ψ⟩ = (1/2)|0⟩ + (√3/2)|1⟩
+                    </div>
+                    <p>Result: [0.5, 0.866]ᵀ</p>
+                    <p>Probabilities: P(0) = 25%, P(1) = 75%</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 3: With Phase</h3>
+                    <div class="formula">
+                        |ψ⟩ = (1/√2)|0⟩ + (i/√2)|1⟩
+                    </div>
+                    <p>Result: [0.707, 0.707i]ᵀ</p>
+                    <p>Probabilities: P(0) = 50%, P(1) = 50%</p>
+                    <p>But different phase!</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 4: Minus State</h3>
+                    <div class="formula">
+                        |-⟩ = (1/√2)|0⟩ - (1/√2)|1⟩
+                    </div>
+                    <p>Result: [0.707, -0.707]ᵀ</p>
+                    <p>Probabilities: P(0) = 50%, P(1) = 50%</p>
+                    <p>Relative phase of π</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Multi-Qubit Addition</h2>
+            <p>Vector addition works for multi-qubit systems too!</p>
+            
+            <h3>Two-Qubit Example</h3>
+            <p>Bell state (entangled superposition):</p>
+            <div class="formula">
+                |Φ⁺⟩ = (1/√2)|00⟩ + (1/√2)|11⟩
+            </div>
+            
+            <div class="code-block">
+import numpy as np<br>
+<br>
+# Basis states<br>
+zero = np.array([[1], [0]], dtype=complex)<br>
+one = np.array([[0], [1]], dtype=complex)<br>
+<br>
+# Two-qubit basis states<br>
+state_00 = np.kron(zero, zero)  # [1,0,0,0]<br>
+state_11 = np.kron(one, one)    # [0,0,0,1]<br>
+<br>
+# Bell state (vector addition!)<br>
+bell = (1/np.sqrt(2)) * state_00 + (1/np.sqrt(2)) * state_11<br>
+print(f"|Φ⁺⟩ = {bell.T[0]}")<br>
+# Output: [0.707 0. 0. 0.707]
+            </div>
+            
+            <p>This creates an entangled state that cannot be separated!</p>
+        </div>
+        
+        <div class="panel">
+            <h2>Key Properties</h2>
+            
+            <h3>1. Component-wise Operation</h3>
+            <p>Addition/subtraction happens component by component</p>
+            <div class="formula">
+                [v₁, v₂]ᵀ + [w₁, w₂]ᵀ = [v₁+w₁, v₂+w₂]ᵀ
+            </div>
+            
+            <h3>2. Dimension Requirement</h3>
+            <p>Can only add vectors of the same dimension!</p>
+            <ul>
+                <li>✓ [3, 4]ᵀ + [1, -2]ᵀ = [4, 2]ᵀ (both 2D)</li>
+                <li>✗ [3, 4]ᵀ + [1, -2, 5]ᵀ (different dimensions!)</li>
+            </ul>
+            
+            <h3>3. Preserves Vector Space</h3>
+            <p>Sum of two vectors is also a vector in the same space</p>
+            <ul>
+                <li>v, w ∈ ℝⁿ ⟹ v + w ∈ ℝⁿ</li>
+                <li>|ψ₁⟩, |ψ₂⟩ ∈ ℂⁿ ⟹ α|ψ₁⟩ + β|ψ₂⟩ ∈ ℂⁿ</li>
+            </ul>
+            
+            <h3>4. Normalization Note</h3>
+            <p>For quantum states, the sum may need renormalization:</p>
+            <div class="formula">
+                |ψ⟩ = (α|ψ₁⟩ + β|ψ₂⟩) / ||α|ψ₁⟩ + β|ψ₂⟩||
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="../02-definition/index.html" class="btn">← Previous: Definition</a>
+            <a href="../index.html" class="btn">Home</a>
+            <a href="../04-scalar-multiplication/index.html" class="btn">Next: Scalar Multiplication →</a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let v1Arrow, v2Arrow, sumArrow, diffArrow;
+        let v1Sphere, v2Sphere, sumSphere, diffSphere;
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(10, 8, 10);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            createScene();
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.8, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            // Setup interactive controls
+            setupControls();
+            
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+        
+        function createScene() {
+            const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(10);
+            scene.add(axesHelper);
+            
+            // Create initial vectors
+            updateVectors(3, 4, 1, -2);
+        }
+        
+        function updateVectors(v1x, v1y, v2x, v2y) {
+            // Remove old arrows and spheres
+            if (v1Arrow) scene.remove(v1Arrow);
+            if (v2Arrow) scene.remove(v2Arrow);
+            if (sumArrow) scene.remove(sumArrow);
+            if (diffArrow) scene.remove(diffArrow);
+            if (v1Sphere) scene.remove(v1Sphere);
+            if (v2Sphere) scene.remove(v2Sphere);
+            if (sumSphere) scene.remove(sumSphere);
+            if (diffSphere) scene.remove(diffSphere);
+            
+            // Calculate sum and difference
+            const sumX = v1x + v2x;
+            const sumY = v1y + v2y;
+            const diffX = v1x - v2x;
+            const diffY = v1y - v2y;
+            
+            // Create v1 arrow (blue)
+            const v1Dir = new THREE.Vector3(v1x, 0, v1y).normalize();
+            const v1Length = Math.sqrt(v1x * v1x + v1y * v1y);
+            v1Arrow = new THREE.ArrowHelper(v1Dir, new THREE.Vector3(0, 0, 0), v1Length, 0x0088ff, 0.5, 0.3);
+            scene.add(v1Arrow);
+            
+            // Create v2 arrow (red)
+            const v2Dir = new THREE.Vector3(v2x, 0, v2y).normalize();
+            const v2Length = Math.sqrt(v2x * v2x + v2y * v2y);
+            v2Arrow = new THREE.ArrowHelper(v2Dir, new THREE.Vector3(0, 0, 0), v2Length, 0xff0088, 0.5, 0.3);
+            scene.add(v2Arrow);
+            
+            // Create sum arrow (green)
+            const sumDir = new THREE.Vector3(sumX, 0, sumY).normalize();
+            const sumLength = Math.sqrt(sumX * sumX + sumY * sumY);
+            sumArrow = new THREE.ArrowHelper(sumDir, new THREE.Vector3(0, 0, 0), sumLength, 0x00ff88, 0.6, 0.4);
+            scene.add(sumArrow);
+            
+            // Create difference arrow (yellow)
+            const diffDir = new THREE.Vector3(diffX, 0, diffY).normalize();
+            const diffLength = Math.sqrt(diffX * diffX + diffY * diffY);
+            diffArrow = new THREE.ArrowHelper(diffDir, new THREE.Vector3(0, 0, 0), diffLength, 0xffff00, 0.5, 0.3);
+            scene.add(diffArrow);
+            
+            // Create spheres at endpoints
+            const sphereGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+            
+            v1Sphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                color: 0x0088ff, emissive: 0x0088ff, emissiveIntensity: 0.3 
+            }));
+            v1Sphere.position.set(v1x, 0, v1y);
+            scene.add(v1Sphere);
+            
+            v2Sphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                color: 0xff0088, emissive: 0xff0088, emissiveIntensity: 0.3 
+            }));
+            v2Sphere.position.set(v2x, 0, v2y);
+            scene.add(v2Sphere);
+            
+            sumSphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                color: 0x00ff88, emissive: 0x00ff88, emissiveIntensity: 0.3 
+            }));
+            sumSphere.position.set(sumX, 0, sumY);
+            scene.add(sumSphere);
+            
+            diffSphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                color: 0xffff00, emissive: 0xffff00, emissiveIntensity: 0.3 
+            }));
+            diffSphere.position.set(diffX, 0, diffY);
+            scene.add(diffSphere);
+            
+            // Draw parallelogram for tip-to-tail visualization
+            const points = [
+                new THREE.Vector3(0, 0.1, 0),
+                new THREE.Vector3(v1x, 0.1, v1y),
+                new THREE.Vector3(sumX, 0.1, sumY),
+                new THREE.Vector3(v2x, 0.1, v2y),
+                new THREE.Vector3(0, 0.1, 0)
+            ];
+            
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.3, transparent: true });
+            const parallelogram = new THREE.Line(geometry, material);
+            scene.add(parallelogram);
+        }
+        
+        function setupControls() {
+            const sliders = ['v1x', 'v1y', 'v2x', 'v2y'];
+            
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                const display = document.getElementById(id + '-value');
+                
+                slider.addEventListener('input', function() {
+                    display.textContent = parseFloat(this.value).toFixed(1);
+                    
+                    const v1x = parseFloat(document.getElementById('v1x').value);
+                    const v1y = parseFloat(document.getElementById('v1y').value);
+                    const v2x = parseFloat(document.getElementById('v2x').value);
+                    const v2y = parseFloat(document.getElementById('v2y').value);
+                    
+                    updateVectors(v1x, v1y, v2x, v2y);
+                });
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            // Gentle bobbing animation
+            if (v1Sphere) v1Sphere.position.y = Math.sin(time) * 0.2;
+            if (v2Sphere) v2Sphere.position.y = Math.sin(time + Math.PI/2) * 0.2;
+            if (sumSphere) sumSphere.position.y = Math.sin(time + Math.PI) * 0.2;
+            if (diffSphere) diffSphere.position.y = Math.sin(time + 3*Math.PI/2) * 0.2;
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

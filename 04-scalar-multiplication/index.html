@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>04 - Scalar Multiplication</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .interactive-controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✖️ Scalar Multiplication</h1>
+            <p>Scaling Vectors and Quantum Phase Shifts</p>
+        </header>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="interactive-controls">
+            <h3>Interactive Scalar Multiplication</h3>
+            <p>Adjust the scalar to see how it scales the vector:</p>
+            
+            <div class="slider-container">
+                <label>Scalar Value: <span class="value-display" id="scalar-value">2.0</span></label>
+                <input type="range" id="scalar" min="-3" max="3" step="0.1" value="2">
+            </div>
+            
+            <div class="slider-container">
+                <label>Vector X Component: <span class="value-display" id="vx-value">3.0</span></label>
+                <input type="range" id="vx" min="-5" max="5" step="0.5" value="3">
+            </div>
+            
+            <div class="slider-container">
+                <label>Vector Y Component: <span class="value-display" id="vy-value">4.0</span></label>
+                <input type="range" id="vy" min="-5" max="5" step="0.5" value="4">
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="panel">
+                <h2>Definition</h2>
+                <p>Scalar multiplication multiplies each component by a scalar:</p>
+                
+                <div class="formula">
+                    c · v = [c·v₁, c·v₂, ..., c·vₙ]ᵀ
+                </div>
+                
+                <p>Where c is a scalar (real or complex number)</p>
+                
+                <div class="example-box">
+                    <h3>Example: Real Scalar</h3>
+                    <p>v = [3, 4]ᵀ, c = 2</p>
+                    <div class="formula">
+                        2v = [2·3, 2·4]ᵀ = [6, 8]ᵀ
+                    </div>
+                    <p>The vector is scaled by factor of 2</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Properties</h2>
+                
+                <h3>1. Distributive over Vector Addition</h3>
+                <div class="formula">
+                    c(v + w) = cv + cw
+                </div>
+                
+                <h3>2. Distributive over Scalar Addition</h3>
+                <div class="formula">
+                    (c + d)v = cv + dv
+                </div>
+                
+                <h3>3. Associative</h3>
+                <div class="formula">
+                    c(dv) = (cd)v
+                </div>
+                
+                <h3>4. Identity</h3>
+                <div class="formula">
+                    1·v = v
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Geometric Interpretation</h2>
+                <p>Scalar multiplication <span class="highlight">scales</span> the vector:</p>
+                
+                <ul>
+                    <li><strong>c > 1:</strong> Stretches the vector</li>
+                    <li><strong>0 < c < 1:</strong> Shrinks the vector</li>
+                    <li><strong>c = 0:</strong> Results in zero vector</li>
+                    <li><strong>c < 0:</strong> Reverses direction</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h3>Examples</h3>
+                    <p>v = [3, 4]ᵀ</p>
+                    <ul>
+                        <li>2v = [6, 8]ᵀ (stretched)</li>
+                        <li>0.5v = [1.5, 2]ᵀ (shrunk)</li>
+                        <li>-1v = [-3, -4]ᵀ (reversed)</li>
+                        <li>0v = [0, 0]ᵀ (zero vector)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Python Implementation</h2>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+# Define vector<br>
+v = np.array([[3], [4]], dtype=float)<br>
+<br>
+# Scalar multiplication<br>
+c = 2<br>
+scaled = c * v<br>
+<br>
+print(f"v = {v.T[0]}")<br>
+print(f"{c}v = {scaled.T[0]}")<br>
+# Output: [6. 8.]
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Complex Scalar Multiplication</h2>
+            <p>In quantum computing, scalars can be <span class="highlight">complex numbers</span>!</p>
+            
+            <h3>Complex Phase</h3>
+            <p>Multiplying by a complex phase e^(iφ) changes the phase:</p>
+            <div class="formula">
+                e^(iφ) · |ψ⟩
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Phase Shift</h3>
+                <p>|ψ⟩ = [1/√2, 1/√2]ᵀ</p>
+                <p>Multiply by e^(iπ) = -1:</p>
+                <div class="formula">
+                    e^(iπ)|ψ⟩ = [-1/√2, -1/√2]ᵀ
+                </div>
+                <p>This is a global phase shift of π</p>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+psi = np.array([[1/np.sqrt(2)], [1/np.sqrt(2)]], dtype=complex)<br>
+phase = np.exp(1j * np.pi)  # e^(iπ) = -1<br>
+<br>
+psi_shifted = phase * psi<br>
+print(f"Phase-shifted: {psi_shifted.T[0]}")<br>
+# Output: [-0.707-0.j -0.707-0.j]
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Quantum Interpretation</h2>
+            
+            <h3>Global Phase</h3>
+            <p>Multiplying entire state by a phase doesn't change measurement outcomes:</p>
+            <div class="formula">
+                |ψ⟩ and e^(iφ)|ψ⟩ are physically equivalent
+            </div>
+            <p>Because probabilities depend on |amplitude|²</p>
+            
+            <div class="example-box">
+                <h3>Example: Global Phase Invariance</h3>
+                <p>|ψ⟩ = [0.6, 0.8]ᵀ</p>
+                <p>P(0) = |0.6|² = 0.36</p>
+                <p>P(1) = |0.8|² = 0.64</p>
+                
+                <p>e^(iπ/4)|ψ⟩ = [0.6e^(iπ/4), 0.8e^(iπ/4)]ᵀ</p>
+                <p>P(0) = |0.6e^(iπ/4)|² = |0.6|² = 0.36 (same!)</p>
+                <p>P(1) = |0.8e^(iπ/4)|² = |0.8|² = 0.64 (same!)</p>
+            </div>
+            
+            <h3>Relative Phase</h3>
+            <p>But <span class="highlight">relative phases</span> between components matter!</p>
+            <div class="formula">
+                |ψ⟩ = α|0⟩ + β|1⟩ ≠ α|0⟩ + e^(iφ)β|1⟩
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Relative Phase Matters</h3>
+                <p>|+⟩ = (1/√2)|0⟩ + (1/√2)|1⟩</p>
+                <p>|-⟩ = (1/√2)|0⟩ - (1/√2)|1⟩</p>
+                <p>= (1/√2)|0⟩ + e^(iπ)(1/√2)|1⟩</p>
+                
+                <p>Both have same measurement probabilities:</p>
+                <ul>
+                    <li>P(0) = 50%, P(1) = 50%</li>
+                </ul>
+                
+                <p>But they are different quantum states!</p>
+                <ul>
+                    <li>Different behavior under quantum gates</li>
+                    <li>Different interference patterns</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Quantum Examples</h2>
+            
+            <div class="content-grid">
+                <div class="example-box">
+                    <h3>Example 1: Scaling Amplitude</h3>
+                    <div class="formula">
+                        2|ψ⟩ where |ψ⟩ = [0.3, 0.4]ᵀ
+                    </div>
+                    <p>Result: [0.6, 0.8]ᵀ</p>
+                    <p>Note: Need to renormalize!</p>
+                    <p>Normalized: [0.6, 0.8]ᵀ (already normalized)</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 2: Phase Rotation</h3>
+                    <div class="formula">
+                        e^(iπ/2)|ψ⟩ = i|ψ⟩
+                    </div>
+                    <p>|ψ⟩ = [1/√2, 1/√2]ᵀ</p>
+                    <p>i|ψ⟩ = [i/√2, i/√2]ᵀ</p>
+                    <p>Global phase shift of π/2</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 3: Negative Scalar</h3>
+                    <div class="formula">
+                        -|ψ⟩ = e^(iπ)|ψ⟩
+                    </div>
+                    <p>|ψ⟩ = [0.6, 0.8]ᵀ</p>
+                    <p>-|ψ⟩ = [-0.6, -0.8]ᵀ</p>
+                    <p>Global phase shift of π</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 4: Complex Scalar</h3>
+                    <div class="formula">
+                        (1+i)|ψ⟩
+                    </div>
+                    <p>|ψ⟩ = [1, 0]ᵀ</p>
+                    <p>(1+i)|ψ⟩ = [1+i, 0]ᵀ</p>
+                    <p>Magnitude: √2, Phase: π/4</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Normalization After Scaling</h2>
+            <p>After scalar multiplication, quantum states may need renormalization:</p>
+            
+            <div class="formula">
+                |ψ'⟩ = (c|ψ⟩) / ||c|ψ⟩||
+            </div>
+            
+            <div class="example-box">
+                <h3>Example</h3>
+                <p>|ψ⟩ = [0.6, 0.8]ᵀ (normalized)</p>
+                <p>c = 2</p>
+                
+                <p>2|ψ⟩ = [1.2, 1.6]ᵀ</p>
+                <p>||2|ψ⟩|| = 2.0 (not normalized!)</p>
+                
+                <p>Normalized:</p>
+                <p>|ψ'⟩ = [1.2, 1.6]ᵀ / 2.0 = [0.6, 0.8]ᵀ</p>
+                <p>Back to original (for real positive scalar)</p>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+psi = np.array([[0.6], [0.8]], dtype=complex)<br>
+c = 2<br>
+<br>
+scaled = c * psi<br>
+print(f"Scaled: {scaled.T[0]}")<br>
+print(f"Norm: {np.linalg.norm(scaled):.3f}")<br>
+<br>
+normalized = scaled / np.linalg.norm(scaled)<br>
+print(f"Normalized: {normalized.T[0]}")<br>
+print(f"Norm: {np.linalg.norm(normalized):.3f}")
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Applications in Quantum Computing</h2>
+            
+            <h3>1. Phase Gates</h3>
+            <p>Phase gates multiply basis states by complex phases:</p>
+            <div class="formula">
+                P(φ)|1⟩ = e^(iφ)|1⟩
+            </div>
+            
+            <h3>2. Amplitude Amplification</h3>
+            <p>Grover's algorithm uses amplitude amplification:</p>
+            <ul>
+                <li>Increase amplitude of target states</li>
+                <li>Decrease amplitude of non-target states</li>
+            </ul>
+            
+            <h3>3. State Preparation</h3>
+            <p>Prepare states with specific amplitudes:</p>
+            <div class="formula">
+                |ψ⟩ = α|0⟩ + β|1⟩
+            </div>
+            <p>Where α and β are chosen for desired probabilities</p>
+            
+            <h3>4. Quantum Interference</h3>
+            <p>Relative phases create interference:</p>
+            <ul>
+                <li>Constructive interference: phases align</li>
+                <li>Destructive interference: phases cancel</li>
+            </ul>
+        </div>
+        
+        <div class="panel">
+            <h2>Key Properties</h2>
+            
+            <h3>1. Linearity</h3>
+            <p>Scalar multiplication is linear:</p>
+            <div class="formula">
+                c(αv + βw) = cαv + cβw
+            </div>
+            
+            <h3>2. Magnitude Scaling</h3>
+            <p>For real scalar c:</p>
+            <div class="formula">
+                ||cv|| = |c| · ||v||
+            </div>
+            
+            <h3>3. Direction Preservation</h3>
+            <p>For positive real scalar c > 0:</p>
+            <ul>
+                <li>Direction preserved</li>
+                <li>Only magnitude changes</li>
+            </ul>
+            
+            <h3>4. Complex Phase</h3>
+            <p>For complex scalar c = |c|e^(iφ):</p>
+            <ul>
+                <li>Magnitude scaled by |c|</li>
+                <li>Phase rotated by φ</li>
+            </ul>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="../03-addition-subtraction/index.html" class="btn">← Previous: Addition & Subtraction</a>
+            <a href="../index.html" class="btn">Home</a>
+            <a href="../05-inner-product/index.html" class="btn">Next: Inner Product →</a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let originalArrow, scaledArrow;
+        let originalSphere, scaledSphere;
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(10, 8, 10);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            createScene();
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.8, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            // Setup interactive controls
+            setupControls();
+            
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+        
+        function createScene() {
+            const gridHelper = new THREE.GridHelper(30, 30, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(15);
+            scene.add(axesHelper);
+            
+            // Create initial vectors
+            updateVectors(2, 3, 4);
+        }
+        
+        function updateVectors(scalar, vx, vy) {
+            // Remove old arrows and spheres
+            if (originalArrow) scene.remove(originalArrow);
+            if (scaledArrow) scene.remove(scaledArrow);
+            if (originalSphere) scene.remove(originalSphere);
+            if (scaledSphere) scene.remove(scaledSphere);
+            
+            // Calculate scaled vector
+            const scaledX = scalar * vx;
+            const scaledY = scalar * vy;
+            
+            // Create original vector arrow (blue)
+            const origDir = new THREE.Vector3(vx, 0, vy).normalize();
+            const origLength = Math.sqrt(vx * vx + vy * vy);
+            originalArrow = new THREE.ArrowHelper(origDir, new THREE.Vector3(0, 0, 0), origLength, 0x0088ff, 0.5, 0.3);
+            scene.add(originalArrow);
+            
+            // Create scaled vector arrow (green)
+            const scaledDir = new THREE.Vector3(scaledX, 0, scaledY).normalize();
+            const scaledLength = Math.sqrt(scaledX * scaledX + scaledY * scaledY);
+            const scaledColor = scalar >= 0 ? 0x00ff88 : 0xff0088;
+            scaledArrow = new THREE.ArrowHelper(scaledDir, new THREE.Vector3(0, 0, 0), scaledLength, scaledColor, 0.6, 0.4);
+            scene.add(scaledArrow);
+            
+            // Create spheres at endpoints
+            const sphereGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+            
+            originalSphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                color: 0x0088ff, emissive: 0x0088ff, emissiveIntensity: 0.3 
+            }));
+            originalSphere.position.set(vx, 0, vy);
+            scene.add(originalSphere);
+            
+            scaledSphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                color: scaledColor, emissive: scaledColor, emissiveIntensity: 0.3 
+            }));
+            scaledSphere.position.set(scaledX, 0, scaledY);
+            scene.add(scaledSphere);
+            
+            // Add labels
+            addLabel(`v = [${vx.toFixed(1)}, ${vy.toFixed(1)}]`, vx, 1, vy, 0x0088ff);
+            addLabel(`${scalar.toFixed(1)}v = [${scaledX.toFixed(1)}, ${scaledY.toFixed(1)}]`, scaledX, 1, scaledY, scaledColor);
+        }
+        
+        function addLabel(text, x, y, z, color) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 64;
+            
+            context.fillStyle = '#' + color.toString(16).padStart(6, '0');
+            context.font = 'Bold 20px Arial';
+            context.textAlign = 'center';
+            context.fillText(text, 128, 40);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.position.set(x, y, z);
+            sprite.scale.set(3, 0.75, 1);
+            scene.add(sprite);
+        }
+        
+        function setupControls() {
+            const sliders = ['scalar', 'vx', 'vy'];
+            
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                const display = document.getElementById(id + '-value');
+                
+                slider.addEventListener('input', function() {
+                    display.textContent = parseFloat(this.value).toFixed(1);
+                    
+                    const scalar = parseFloat(document.getElementById('scalar').value);
+                    const vx = parseFloat(document.getElementById('vx').value);
+                    const vy = parseFloat(document.getElementById('vy').value);
+                    
+                    updateVectors(scalar, vx, vy);
+                });
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            // Gentle bobbing animation
+            if (originalSphere) originalSphere.position.y = Math.sin(time) * 0.2;
+            if (scaledSphere) scaledSphere.position.y = Math.sin(time + Math.PI) * 0.2;
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
