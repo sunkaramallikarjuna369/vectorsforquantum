@@ -1,0 +1,200 @@
+Vectors in Quantum Computing
+1. Introduction
+
+classical physics and quantum mechanics.
+quantities with magnitude and
+
+Vectors are the backbone of both
+In classical contexts, vectors represent
+
+direction (like force or velocity).
+In quantum computing, vectors represent quantum states, existing in an
+abstract complex vector space called a Hilbert space.
+A quantum state is represented by a column vector whose elements are
+complex probability amplitudes.
+The square of each amplitude’s magnitude gives the probability of observing
+the corresponding state when measured.
+
+2. Mathematical Definition of a Vector
+A vector is an ordered collection of real or complex numbers:
+
+→
+
+v = [
+
+v1 v2 ⋮ vn
+
+→
+
+],
+
+v ∈ R
+
+n
+
+or C
+
+Dimension: number of components ( )
+Components:
+n
+
+Example
+
+v1 , v2 , … , vn
+
+→
+
+v = [3 4],
+
+→
+
+w = [1 − 2]
+
+import numpy as np
+v = np.array([[3], [4]], dtype=float)
+
+n
+
+w = np.array([[1], [-2]], dtype=float)
+
+Quantum Interpretation:
+
+Each element in a quantum vector corresponds to the
+state (e.g., |0⟩ or |1⟩).
+The squared magnitude gives the
+
+amplitude of a basis
+
+probability of observing that state.
+
+3. Vector Addition and Subtraction
+Intuition
+
+→
+
+→
+
+v + w = [3 + 1 4 + (−2)] = [4 2]
+
+superposition
+
+Vector addition represents
+in quantum computing.
+For a qubit, the superposition of |0⟩ and |1⟩ creates a state that exists partly
+in both.
+
+Quantum Example
+1
+|+⟩ =
+
+(|0⟩ + |1⟩)
+√2
+
+zero = np.array([[1], [0]], dtype=complex)
+one = np.array([[0], [1]], dtype=complex)
+plus = (1/np.sqrt(2)) * (zero + one)
+print(plus)
+
+Output:
+1
+|+⟩ =
+
+[1 1]
+√2
+
+4. Scalar Multiplication
+→
+
+2v = 2 × [3 4] = [6 8]
+
+Quantum Interpretation
+
+In quantum computing, multiplying by a
+
+complex phase (e.g.,
+
+e
+
+iϕ
+
+) changes
+
+the phase but not the physical measurement outcome.
+However,
+between components affect interference.
+
+relative phases
+
+Example
+
+|ψ⟩ =
+
+1
+
+(|0⟩ + e
+
+iπ
+
+|1⟩)
+
+√2
+
+alpha = np.exp(1j * np.pi) # phase shift of 180 degrees
+psi = (1/np.sqrt(2)) * (zero + alpha * one)
+print(np.round(psi, 3))
+
+5. Inner Product (Dot Product)
+→:
+For two vectors v→ and w
+∗
+
+Example (Classical)
+
+∗
+
+⟨v|w⟩ = v 1 w 1 + v 2 w 2
+
+⟨v|w⟩ = (3)(1) + (4)(−2) = −5
+
+Example (Quantum)
+
+⟨0|1⟩ = 0,
+
+v = np.array([3, 4])
+w = np.array([1, -2])
+inner = np.dot(v, w)
+
+⟨+|+⟩ = 1
+
+print(inner)
+psi_plus = (1/np.sqrt(2)) * np.array([1, 1])
+phi_minus = (1/np.sqrt(2)) * np.array([1, -1])
+print(np.vdot(psi_plus, phi_minus))
+
+Intuition:
+
+overlap between vectors.
+In quantum mechanics, it gives the probability amplitude of finding one state
+The inner product measures
+in another.
+
+6. Norm (Magnitude or Length)
+→
+
+||v|| = √ v
+
+2
+1
+
++ v
+
+2
+2
+
+= √3 2 + 4 2 = 5
+
+In quantum mechanics, every valid state vector must satisfy:
+|||ψ⟩|| = 1 ⇒ |α|
+
+2
+
