@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outer Product - Vectors in Quantum Computing</title>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        .visualization-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        #canvas-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .matrix-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #64ffda;
+            margin: 10px 0;
+        }
+        
+        .density-matrix {
+            background: rgba(100, 255, 218, 0.05);
+            border-left: 3px solid #64ffda;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⊗ Outer Product</h1>
+            <p class="subtitle">Density Matrices and Projectors</p>
+        </header>
+
+        <nav class="nav-buttons">
+            <a href="../11-transformations/index.html" class="btn btn-secondary">← Previous: Transformations</a>
+            <a href="../index.html" class="btn btn-primary">🏠 Home</a>
+            <a href="../13-bloch-sphere/index.html" class="btn btn-secondary">Next: Bloch Sphere →</a>
+        </nav>
+
+        <div class="visualization-container">
+            <h2>Interactive Outer Product Visualization</h2>
+            <div id="canvas-container"></div>
+            
+            <div class="controls-panel">
+                <h3 style="color: #64ffda; margin-top: 0;">Outer Product: |ψ⟩⟨φ|</h3>
+                <div class="matrix-display" id="outer-product-display"></div>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2>What is the Outer Product?</h2>
+            <p>
+                The outer product of two vectors |ψ⟩ and |φ⟩ is written as |ψ⟩⟨φ| and produces a matrix.
+                Unlike the inner product ⟨φ|ψ⟩ which gives a scalar, the outer product gives an operator.
+            </p>
+            
+            <div class="key-point">
+                <strong>Key Distinction:</strong><br>
+                Inner product: ⟨φ|ψ⟩ → scalar (number)<br>
+                Outer product: |ψ⟩⟨φ| → matrix (operator)
+            </div>
+            
+            <div class="formula">
+                <strong>Definition:</strong><br>
+                |ψ⟩⟨φ| = |ψ⟩ ⊗ ⟨φ| = column vector × row vector
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Computing Outer Products</h2>
+            <p>
+                To compute the outer product, multiply a column vector by a row vector:
+            </p>
+            
+            <div class="example">
+                <h3>Example: Basic Outer Product</h3>
+                <div class="formula">
+                    |ψ⟩ = [α]    ⟨φ| = [β* γ*]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[β]<br><br>
+                    |ψ⟩⟨φ| = [α] [β* γ*] = [αβ*  αγ*]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[β]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ββ*  βγ*]
+                </div>
+            </div>
+            
+            <div class="example">
+                <h3>Example: Computational Basis</h3>
+                <div class="formula">
+                    |0⟩ = [1]    ⟨0| = [1 0]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0]<br><br>
+                    |0⟩⟨0| = [1] [1 0] = [1  0]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  0]<br><br>
+                    |1⟩⟨1| = [0] [0 1] = [0  0]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  1]
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Projectors</h2>
+            <p>
+                A projector is an outer product of a normalized state with itself: P = |ψ⟩⟨ψ|
+            </p>
+            
+            <div class="key-point">
+                <strong>Properties of Projectors:</strong><br>
+                1. Hermitian: P† = P<br>
+                2. Idempotent: P² = P<br>
+                3. Eigenvalues are 0 or 1<br>
+                4. Projects onto subspace spanned by |ψ⟩
+            </div>
+            
+            <div class="example">
+                <h3>Example: Projector onto |0⟩</h3>
+                <div class="formula">
+                    P₀ = |0⟩⟨0| = [1  0]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  0]<br><br>
+                    P₀|0⟩ = |0⟩ (projects |0⟩ onto itself)<br>
+                    P₀|1⟩ = 0 (projects |1⟩ to zero)<br><br>
+                    For any state |ψ⟩ = α|0⟩ + β|1⟩:<br>
+                    P₀|ψ⟩ = α|0⟩ (extracts |0⟩ component)
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Density Matrices</h2>
+            <p>
+                Density matrices are the most general way to describe quantum states, including mixed states.
+                For a pure state |ψ⟩, the density matrix is ρ = |ψ⟩⟨ψ|.
+            </p>
+            
+            <div class="density-matrix">
+                <h3>Pure State Density Matrix</h3>
+                <div class="formula">
+                    ρ = |ψ⟩⟨ψ|<br><br>
+                    For |ψ⟩ = α|0⟩ + β|1⟩:<br>
+                    ρ = [|α|²    α β*]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;[α*β    |β|²]
+                </div>
+                
+                <p><strong>Properties:</strong></p>
+                <ul>
+                    <li>Hermitian: ρ† = ρ</li>
+                    <li>Positive semi-definite: ⟨ψ|ρ|ψ⟩ ≥ 0 for all |ψ⟩</li>
+                    <li>Unit trace: Tr(ρ) = 1</li>
+                    <li>Pure state: Tr(ρ²) = 1</li>
+                </ul>
+            </div>
+            
+            <div class="example">
+                <h3>Example: Density Matrices for Basis States</h3>
+                <div class="formula">
+                    ρ₀ = |0⟩⟨0| = [1  0]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  0]<br><br>
+                    ρ₁ = |1⟩⟨1| = [0  0]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  1]<br><br>
+                    ρ₊ = |+⟩⟨+| = [0.5  0.5]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0.5  0.5]
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Mixed States</h2>
+            <p>
+                Mixed states represent statistical mixtures of pure states. They cannot be written as |ψ⟩⟨ψ| 
+                for any single state |ψ⟩.
+            </p>
+            
+            <div class="formula">
+                <strong>Mixed State Density Matrix:</strong><br>
+                ρ = Σᵢ pᵢ|ψᵢ⟩⟨ψᵢ|<br><br>
+                where pᵢ are probabilities (pᵢ ≥ 0, Σpᵢ = 1)
+            </div>
+            
+            <div class="example">
+                <h3>Example: Maximally Mixed State</h3>
+                <div class="formula">
+                    ρ = 0.5|0⟩⟨0| + 0.5|1⟩⟨1|<br>
+                    &nbsp;&nbsp;= 0.5[1  0] + 0.5[0  0]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  0]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  1]<br>
+                    &nbsp;&nbsp;= [0.5   0 ]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;[0   0.5]<br>
+                    &nbsp;&nbsp;= I/2
+                </div>
+                <p>
+                    This represents complete ignorance - equal probability of |0⟩ or |1⟩.
+                    Note: Tr(ρ²) = 0.5 < 1, so this is a mixed state, not pure.
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Measurement with Density Matrices</h2>
+            <p>
+                Measurement outcomes can be computed using density matrices and projectors:
+            </p>
+            
+            <div class="formula">
+                <strong>Born Rule with Density Matrices:</strong><br>
+                P(outcome i) = Tr(Pᵢρ)<br><br>
+                where Pᵢ is the projector for outcome i
+            </div>
+            
+            <div class="example">
+                <h3>Example: Measuring |+⟩ in Computational Basis</h3>
+                <div class="formula">
+                    |+⟩ = (|0⟩ + |1⟩)/√2<br>
+                    ρ = |+⟩⟨+| = [0.5  0.5]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0.5  0.5]<br><br>
+                    P(0) = Tr(|0⟩⟨0| ρ) = Tr([1  0][0.5  0.5])<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0  0][0.5  0.5])<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Tr([0.5  0.5]) = 0.5<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0    0  ]<br><br>
+                    P(1) = Tr(|1⟩⟨1| ρ) = 0.5
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Partial Trace</h2>
+            <p>
+                For multi-qubit systems, the partial trace allows us to "trace out" one subsystem 
+                to get the reduced density matrix of the other subsystem.
+            </p>
+            
+            <div class="formula">
+                <strong>Partial Trace:</strong><br>
+                ρₐ = Trᵦ(ρₐᵦ)<br><br>
+                Traces out system B, leaving only system A
+            </div>
+            
+            <div class="example">
+                <h3>Example: Bell State</h3>
+                <div class="formula">
+                    |Φ⁺⟩ = (|00⟩ + |11⟩)/√2<br>
+                    ρₐᵦ = |Φ⁺⟩⟨Φ⁺|<br><br>
+                    Tracing out qubit B:<br>
+                    ρₐ = Trᵦ(ρₐᵦ) = [0.5   0 ]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[0   0.5]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= I/2 (maximally mixed!)
+                </div>
+                <p>
+                    Even though the joint state is pure, each individual qubit is maximally mixed.
+                    This is a signature of entanglement!
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Applications</h2>
+            <div class="highlight">
+                <h3>1. Quantum Measurement</h3>
+                <p>
+                    Projectors |ψ⟩⟨ψ| represent measurement operators. The Born rule gives 
+                    measurement probabilities using density matrices.
+                </p>
+                
+                <h3>2. Quantum State Tomography</h3>
+                <p>
+                    Reconstructing unknown quantum states by measuring in different bases and 
+                    building the density matrix from measurement statistics.
+                </p>
+                
+                <h3>3. Open Quantum Systems</h3>
+                <p>
+                    Density matrices are essential for describing systems interacting with 
+                    environments, where pure states become mixed due to decoherence.
+                </p>
+                
+                <h3>4. Entanglement Detection</h3>
+                <p>
+                    The partial trace reveals entanglement: if ρₐ is mixed but ρₐᵦ is pure, 
+                    the systems are entangled.
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Python Implementation</h2>
+            <div class="code-block">
+                <pre><code>import numpy as np
+
+# Define states
+ket0 = np.array([[1], [0]], dtype=complex)
+ket1 = np.array([[0], [1]], dtype=complex)
+bra0 = ket0.conj().T
+bra1 = ket1.conj().T
+
+# Outer products (projectors)
+P0 = ket0 @ bra0  # |0⟩⟨0|
+P1 = ket1 @ bra1  # |1⟩⟨1|
+
+print(f"P0 = |0⟩⟨0| =\n{P0}")
+print(f"P1 = |1⟩⟨1| =\n{P1}")
+
+# Verify projector properties
+print(f"\nP0² = P0: {np.allclose(P0 @ P0, P0)}")
+print(f"P0† = P0: {np.allclose(P0.conj().T, P0)}")
+
+# Density matrix for |+⟩
+ket_plus = (ket0 + ket1) / np.sqrt(2)
+rho_plus = ket_plus @ ket_plus.conj().T
+
+print(f"\nρ₊ = |+⟩⟨+| =\n{rho_plus}")
+
+# Verify density matrix properties
+trace = np.trace(rho_plus)
+purity = np.trace(rho_plus @ rho_plus)
+
+print(f"\nTr(ρ) = {trace:.6f}")
+print(f"Tr(ρ²) = {purity:.6f} (pure state)")
+
+# Measurement probability
+P_measure_0 = np.trace(P0 @ rho_plus)
+print(f"\nP(measure 0) = {P_measure_0.real:.6f}")</code></pre>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Key Takeaways</h2>
+            <div class="key-point">
+                <ul>
+                    <li>Outer product |ψ⟩⟨φ| produces a matrix (operator)</li>
+                    <li>Inner product ⟨φ|ψ⟩ produces a scalar (number)</li>
+                    <li>Projectors P = |ψ⟩⟨ψ| are Hermitian and idempotent</li>
+                    <li>Density matrices ρ = |ψ⟩⟨ψ| describe quantum states</li>
+                    <li>Pure states: Tr(ρ²) = 1, Mixed states: Tr(ρ²) < 1</li>
+                    <li>Measurement: P(i) = Tr(Pᵢρ)</li>
+                    <li>Partial trace reveals entanglement</li>
+                    <li>Density matrices are essential for open quantum systems</li>
+                </ul>
+            </div>
+        </section>
+
+        <nav class="nav-buttons">
+            <a href="../11-transformations/index.html" class="btn btn-secondary">← Previous: Transformations</a>
+            <a href="../index.html" class="btn btn-primary">🏠 Home</a>
+            <a href="../13-bloch-sphere/index.html" class="btn btn-secondary">Next: Bloch Sphere →</a>
+        </nav>
+    </div>
+
+    <script>
+        // Three.js Scene Setup
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a);
+        
+        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(3, 3, 3);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+        
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        
+        // Add lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const pointLight = new THREE.PointLight(0xffffff, 1);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+        
+        // Add grid and axes
+        const gridHelper = new THREE.GridHelper(6, 6, 0x444444, 0x222222);
+        scene.add(gridHelper);
+        
+        const axesHelper = new THREE.AxesHelper(3);
+        scene.add(axesHelper);
+        
+        // Visualize outer product as matrix
+        const ket0 = [1, 0];
+        const bra0 = [1, 0];
+        
+        // Compute outer product |0⟩⟨0|
+        const outerProduct = [
+            [ket0[0] * bra0[0], ket0[0] * bra0[1]],
+            [ket0[1] * bra0[0], ket0[1] * bra0[1]]
+        ];
+        
+        // Display outer product
+        const display = document.getElementById('outer-product-display');
+        display.innerHTML = `
+            <strong>|0⟩⟨0| =</strong><br>
+            [${outerProduct[0][0].toFixed(1)}  ${outerProduct[0][1].toFixed(1)}]<br>
+            [${outerProduct[1][0].toFixed(1)}  ${outerProduct[1][1].toFixed(1)}]<br><br>
+            <strong>Properties:</strong><br>
+            - Hermitian: P† = P<br>
+            - Idempotent: P² = P<br>
+            - Projector onto |0⟩
+        `;
+        
+        // Create visual representation of matrix
+        const matrixGroup = new THREE.Group();
+        
+        for (let i = 0; i < 2; i++) {
+            for (let j = 0; j < 2; j++) {
+                const value = outerProduct[i][j];
+                if (Math.abs(value) > 0.01) {
+                    const geometry = new THREE.BoxGeometry(0.8, 0.8, value * 2);
+                    const material = new THREE.MeshPhongMaterial({
+                        color: value > 0 ? 0x00ff00 : 0xff0000,
+                        transparent: true,
+                        opacity: 0.7
+                    });
+                    const cube = new THREE.Mesh(geometry, material);
+                    cube.position.set(j - 0.5, value, i - 0.5);
+                    matrixGroup.add(cube);
+                }
+            }
+        }
+        
+        scene.add(matrixGroup);
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            matrixGroup.rotation.y += 0.005;
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+    </script>
+</body>
+</html>
