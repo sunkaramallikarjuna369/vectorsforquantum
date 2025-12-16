@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>09 - Linear Independence</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .interactive-controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .result-display {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        
+        .independence-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .independent-yes {
+            background: rgba(0, 255, 0, 0.3);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+        }
+        
+        .independent-no {
+            background: rgba(255, 0, 0, 0.3);
+            border: 2px solid #ff0000;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 Linear Independence</h1>
+            <p>Foundation of Basis Vectors and Quantum States</p>
+        </header>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="interactive-controls">
+            <h3>Interactive Linear Independence Explorer</h3>
+            <p>Try to express v₃ as a combination of v₁ and v₂:</p>
+            
+            <div class="slider-container">
+                <label>Coefficient c₁: <span class="value-display" id="c1-value">0.00</span></label>
+                <input type="range" id="c1" min="-2" max="2" step="0.1" value="0">
+            </div>
+            
+            <div class="slider-container">
+                <label>Coefficient c₂: <span class="value-display" id="c2-value">0.00</span></label>
+                <input type="range" id="c2" min="-2" max="2" step="0.1" value="0">
+            </div>
+            
+            <div class="result-display">
+                c₁v₁ + c₂v₂ = <span id="combination-result">[0.00, 0.00]</span>
+            </div>
+            
+            <div class="result-display">
+                Distance to v₃: <span id="distance">2.24</span>
+                <span id="independence-indicator" class="independence-indicator independent-yes">INDEPENDENT ✓</span>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="panel">
+                <h2>Definition</h2>
+                <p>A set of vectors {v₁, v₂, ..., vₙ} is <span class="highlight">linearly independent</span> if:</p>
+                <div class="formula">
+                    c₁v₁ + c₂v₂ + ... + cₙvₙ = 0
+                </div>
+                <p>implies that all coefficients are zero:</p>
+                <div class="formula">
+                    c₁ = c₂ = ... = cₙ = 0
+                </div>
+                
+                <div class="key-point">
+                    <strong>Intuition:</strong> No vector can be written as a linear combination of the others
+                </div>
+                
+                <h3>Linear Dependence</h3>
+                <p>Vectors are <span class="highlight">linearly dependent</span> if at least one can be written as a combination of others:</p>
+                <div class="formula">
+                    v₃ = c₁v₁ + c₂v₂
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Examples</h2>
+                
+                <div class="example-box">
+                    <h3>Example 1: Independent Vectors</h3>
+                    <p>v₁ = [1, 0], v₂ = [0, 1]</p>
+                    <p>These are linearly independent because:</p>
+                    <div class="formula">
+                        c₁[1, 0] + c₂[0, 1] = [0, 0]
+                    </div>
+                    <p>only when c₁ = 0 and c₂ = 0</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 2: Dependent Vectors</h3>
+                    <p>v₁ = [1, 0], v₂ = [2, 0]</p>
+                    <p>These are linearly dependent because:</p>
+                    <div class="formula">
+                        v₂ = 2v₁
+                    </div>
+                    <p>or equivalently: 2v₁ - v₂ = 0</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example 3: Three Vectors in 2D</h3>
+                    <p>v₁ = [1, 0], v₂ = [0, 1], v₃ = [1, 1]</p>
+                    <p>These are linearly dependent because:</p>
+                    <div class="formula">
+                        v₃ = v₁ + v₂
+                    </div>
+                    <p>Any 3 vectors in 2D space must be dependent!</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Quantum Basis Independence</h2>
+                
+                <h3>Computational Basis</h3>
+                <p>The computational basis states are linearly independent:</p>
+                <div class="formula">
+                    |0⟩ = [1, 0]ᵀ, |1⟩ = [0, 1]ᵀ
+                </div>
+                
+                <p>Proof: If c₁|0⟩ + c₂|1⟩ = 0, then:</p>
+                <div class="formula">
+                    c₁[1, 0]ᵀ + c₂[0, 1]ᵀ = [c₁, c₂]ᵀ = [0, 0]ᵀ
+                </div>
+                <p>Therefore c₁ = 0 and c₂ = 0 ✓</p>
+                
+                <div class="key-point">
+                    <strong>Quantum Implication:</strong> Any qubit state can be uniquely represented as |ψ⟩ = α|0⟩ + β|1⟩
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Python Implementation</h2>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+def are_linearly_independent(vectors):<br>
+    """Check if vectors are linearly independent"""<br>
+    # Create matrix with vectors as columns<br>
+    matrix = np.column_stack(vectors)<br>
+    <br>
+    # Compute rank<br>
+    rank = np.linalg.matrix_rank(matrix)<br>
+    <br>
+    # Independent if rank equals number of vectors<br>
+    return rank == len(vectors)<br>
+<br>
+# Test with computational basis<br>
+zero = np.array([1, 0])<br>
+one = np.array([0, 1])<br>
+<br>
+print(are_linearly_independent([zero, one]))<br>
+# Output: True
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Testing Linear Independence</h2>
+            
+            <h3>Method 1: Matrix Rank</h3>
+            <p>Create a matrix with vectors as columns and compute rank:</p>
+            <ul>
+                <li>If rank = number of vectors → Independent</li>
+                <li>If rank < number of vectors → Dependent</li>
+            </ul>
+            
+            <h3>Method 2: Determinant (Square Matrices)</h3>
+            <p>For n vectors in n-dimensional space:</p>
+            <ul>
+                <li>If det(M) ≠ 0 → Independent</li>
+                <li>If det(M) = 0 → Dependent</li>
+            </ul>
+            
+            <h3>Method 3: Row Reduction</h3>
+            <p>Perform Gaussian elimination:</p>
+            <ul>
+                <li>If no row becomes all zeros → Independent</li>
+                <li>If a row becomes all zeros → Dependent</li>
+            </ul>
+            
+            <div class="example-box">
+                <h3>Example: Testing with Rank</h3>
+                <p>Vectors: v₁ = [1, 0], v₂ = [0, 1], v₃ = [1, 1]</p>
+                
+                <p>Matrix M = [[1, 0, 1], [0, 1, 1]]</p>
+                <p>Rank(M) = 2</p>
+                <p>Number of vectors = 3</p>
+                <p>Since 2 < 3, vectors are dependent ✓</p>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Properties</h2>
+            
+            <h3>1. Maximum Independent Vectors</h3>
+            <p>In n-dimensional space, at most n vectors can be linearly independent</p>
+            <ul>
+                <li>2D space: max 2 independent vectors</li>
+                <li>3D space: max 3 independent vectors</li>
+                <li>n-qubit system (2ⁿ dimensions): max 2ⁿ independent vectors</li>
+            </ul>
+            
+            <h3>2. Subset Property</h3>
+            <p>Any subset of independent vectors is also independent</p>
+            
+            <h3>3. Extension Property</h3>
+            <p>Independent vectors can be extended to a basis</p>
+            
+            <h3>4. Orthogonal Implies Independent</h3>
+            <p>If vectors are orthogonal (and non-zero), they are linearly independent</p>
+            <p>But independent vectors need not be orthogonal!</p>
+        </div>
+        
+        <div class="panel">
+            <h2>Span and Basis</h2>
+            
+            <h3>Span</h3>
+            <p>The <span class="highlight">span</span> of vectors {v₁, v₂, ..., vₙ} is the set of all linear combinations:</p>
+            <div class="formula">
+                span{v₁, v₂, ..., vₙ} = {c₁v₁ + c₂v₂ + ... + cₙvₙ : cᵢ ∈ ℂ}
+            </div>
+            
+            <h3>Basis</h3>
+            <p>A <span class="highlight">basis</span> is a set of vectors that is:</p>
+            <ul>
+                <li>Linearly independent</li>
+                <li>Spans the entire space</li>
+            </ul>
+            
+            <div class="example-box">
+                <h3>Computational Basis is a Basis</h3>
+                <p>{|0⟩, |1⟩} is a basis for single-qubit states because:</p>
+                <ol>
+                    <li>Linearly independent ✓</li>
+                    <li>Spans all qubit states: any |ψ⟩ = α|0⟩ + β|1⟩ ✓</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Multi-Qubit Independence</h2>
+            
+            <h3>Two-Qubit Basis</h3>
+            <p>The four states {|00⟩, |01⟩, |10⟩, |11⟩} are linearly independent:</p>
+            <div class="formula">
+                |00⟩ = [1, 0, 0, 0]ᵀ
+            </div>
+            <div class="formula">
+                |01⟩ = [0, 1, 0, 0]ᵀ
+            </div>
+            <div class="formula">
+                |10⟩ = [0, 0, 1, 0]ᵀ
+            </div>
+            <div class="formula">
+                |11⟩ = [0, 0, 0, 1]ᵀ
+            </div>
+            
+            <p>Any two-qubit state can be uniquely written as:</p>
+            <div class="formula">
+                |ψ⟩ = α|00⟩ + β|01⟩ + γ|10⟩ + δ|11⟩
+            </div>
+            
+            <h3>Bell States</h3>
+            <p>The four Bell states also form a basis (linearly independent):</p>
+            <div class="formula">
+                |Φ⁺⟩ = (|00⟩ + |11⟩)/√2
+            </div>
+            <div class="formula">
+                |Φ⁻⟩ = (|00⟩ - |11⟩)/√2
+            </div>
+            <div class="formula">
+                |Ψ⁺⟩ = (|01⟩ + |10⟩)/√2
+            </div>
+            <div class="formula">
+                |Ψ⁻⟩ = (|01⟩ - |10⟩)/√2
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Applications</h2>
+            
+            <h3>1. Quantum State Representation</h3>
+            <p>Independent basis vectors ensure unique state representation</p>
+            
+            <h3>2. Quantum Algorithms</h3>
+            <p>Algorithm correctness relies on basis independence</p>
+            
+            <h3>3. Quantum Error Correction</h3>
+            <p>Error syndromes use independent subspaces</p>
+            
+            <h3>4. Dimension Counting</h3>
+            <p>Number of independent vectors = dimension of space</p>
+            <ul>
+                <li>Single qubit: 2 independent states</li>
+                <li>Two qubits: 4 independent states</li>
+                <li>n qubits: 2ⁿ independent states</li>
+            </ul>
+            
+            <h3>5. Completeness Relations</h3>
+            <p>Independent basis vectors satisfy:</p>
+            <div class="formula">
+                Σᵢ |bᵢ⟩⟨bᵢ| = I
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Common Mistakes</h2>
+            
+            <h3>Mistake 1: Confusing Independence with Orthogonality</h3>
+            <p>❌ Independent vectors must be orthogonal</p>
+            <p>✓ Independent vectors need not be orthogonal</p>
+            <p>Example: v₁ = [1, 0], v₂ = [1, 1] are independent but not orthogonal</p>
+            
+            <h3>Mistake 2: Too Many Vectors</h3>
+            <p>❌ Can have 3 independent vectors in 2D space</p>
+            <p>✓ At most n independent vectors in n-dimensional space</p>
+            
+            <h3>Mistake 3: Zero Vector</h3>
+            <p>❌ Any set containing the zero vector is independent</p>
+            <p>✓ Any set containing the zero vector is dependent</p>
+            <p>Because: 1·0 + 0·v₁ + 0·v₂ = 0 with non-zero coefficient</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="../08-orthogonality/index.html" class="btn">← Previous: Orthogonality</a>
+            <a href="../index.html" class="btn">Home</a>
+            <a href="../10-multi-qubit/index.html" class="btn">Next: Multi-Qubit Systems →</a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let v1Arrow, v2Arrow, v3Arrow, combinationArrow;
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(5, 4, 5);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            createScene();
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.8, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            setupControls();
+            
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+        
+        function createScene() {
+            const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            updateVectors(0, 0);
+        }
+        
+        function updateVectors(c1, c2) {
+            // Remove old objects
+            if (v1Arrow) scene.remove(v1Arrow);
+            if (v2Arrow) scene.remove(v2Arrow);
+            if (v3Arrow) scene.remove(v3Arrow);
+            if (combinationArrow) scene.remove(combinationArrow);
+            
+            // Update displays
+            document.getElementById('c1-value').textContent = c1.toFixed(2);
+            document.getElementById('c2-value').textContent = c2.toFixed(2);
+            
+            // Define basis vectors
+            const v1 = new THREE.Vector3(1, 0, 0);
+            const v2 = new THREE.Vector3(0, 0, 1);
+            const v3 = new THREE.Vector3(1, 0, 1);
+            
+            // Calculate combination
+            const combination = new THREE.Vector3(c1, 0, c2);
+            
+            // Update result display
+            document.getElementById('combination-result').textContent = 
+                `[${c1.toFixed(2)}, ${c2.toFixed(2)}]`;
+            
+            // Calculate distance to v3
+            const distance = combination.distanceTo(v3);
+            document.getElementById('distance').textContent = distance.toFixed(2);
+            
+            // Update independence indicator
+            const indicator = document.getElementById('independence-indicator');
+            const isIndependent = distance > 0.2;
+            
+            if (isIndependent) {
+                indicator.textContent = 'INDEPENDENT ✓';
+                indicator.className = 'independence-indicator independent-yes';
+            } else {
+                indicator.textContent = 'DEPENDENT ✗';
+                indicator.className = 'independence-indicator independent-no';
+            }
+            
+            // Create v1 arrow (blue)
+            v1Arrow = new THREE.ArrowHelper(v1.clone().normalize(), new THREE.Vector3(0, 0, 0), 
+                                           2, 0x0088ff, 0.4, 0.25);
+            scene.add(v1Arrow);
+            
+            // Create v2 arrow (red)
+            v2Arrow = new THREE.ArrowHelper(v2.clone().normalize(), new THREE.Vector3(0, 0, 0), 
+                                           2, 0xff0088, 0.4, 0.25);
+            scene.add(v2Arrow);
+            
+            // Create v3 arrow (green)
+            v3Arrow = new THREE.ArrowHelper(v3.clone().normalize(), new THREE.Vector3(0, 0, 0), 
+                                           v3.length(), 0x00ff88, 0.4, 0.25);
+            scene.add(v3Arrow);
+            
+            // Create combination arrow (yellow)
+            if (combination.length() > 0.1) {
+                combinationArrow = new THREE.ArrowHelper(combination.clone().normalize(), 
+                                                        new THREE.Vector3(0, 0, 0), 
+                                                        combination.length(), 0xffff00, 0.4, 0.25);
+                scene.add(combinationArrow);
+            }
+        }
+        
+        function setupControls() {
+            const sliders = ['c1', 'c2'];
+            
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                
+                slider.addEventListener('input', function() {
+                    const c1 = parseFloat(document.getElementById('c1').value);
+                    const c2 = parseFloat(document.getElementById('c2').value);
+                    
+                    updateVectors(c1, c2);
+                });
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
