@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>07 - Basis Vectors</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .interactive-controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .result-display {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 1.2em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📐 Basis Vectors</h1>
+            <p>Foundation of Vector Spaces and Quantum States</p>
+        </header>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="interactive-controls">
+            <h3>Interactive Basis Representation</h3>
+            <p>Adjust coefficients to see how basis vectors combine:</p>
+            
+            <div class="slider-container">
+                <label>Coefficient α (for |0⟩): <span class="value-display" id="alpha-value">0.60</span></label>
+                <input type="range" id="alpha" min="0" max="1" step="0.05" value="0.6">
+            </div>
+            
+            <div class="slider-container">
+                <label>Coefficient β (for |1⟩): <span class="value-display" id="beta-value">0.80</span></label>
+                <input type="range" id="beta" min="0" max="1" step="0.05" value="0.8">
+            </div>
+            
+            <div class="result-display">
+                |ψ⟩ = <span id="state-result">0.60|0⟩ + 0.80|1⟩</span>
+            </div>
+            
+            <div class="result-display">
+                Normalized: <span id="normalized-result">0.60|0⟩ + 0.80|1⟩</span>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="panel">
+                <h2>Definition</h2>
+                <p>A <span class="highlight">basis</span> is a set of linearly independent vectors that span the entire vector space.</p>
+                
+                <h3>Properties of a Basis</h3>
+                <ul>
+                    <li>Linearly independent</li>
+                    <li>Spans the entire space</li>
+                    <li>Any vector can be written as a linear combination</li>
+                    <li>Number of basis vectors = dimension of space</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h3>Example: 2D Space</h3>
+                    <p>Standard basis: {ê₁, ê₂}</p>
+                    <div class="formula">
+                        ê₁ = [1, 0]ᵀ, ê₂ = [0, 1]ᵀ
+                    </div>
+                    <p>Any 2D vector v = [x, y]ᵀ can be written as:</p>
+                    <div class="formula">
+                        v = x·ê₁ + y·ê₂
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Classical Basis Vectors</h2>
+                
+                <h3>2D Standard Basis</h3>
+                <div class="formula">
+                    î = [1, 0]ᵀ (x-direction)
+                </div>
+                <div class="formula">
+                    ĵ = [0, 1]ᵀ (y-direction)
+                </div>
+                
+                <h3>3D Standard Basis</h3>
+                <div class="formula">
+                    î = [1, 0, 0]ᵀ (x-direction)
+                </div>
+                <div class="formula">
+                    ĵ = [0, 1, 0]ᵀ (y-direction)
+                </div>
+                <div class="formula">
+                    k̂ = [0, 0, 1]ᵀ (z-direction)
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example: Vector in 3D</h3>
+                    <p>v = [3, 4, 5]ᵀ</p>
+                    <div class="formula">
+                        v = 3î + 4ĵ + 5k̂
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Quantum Basis States</h2>
+                
+                <h3>Computational Basis</h3>
+                <p>The standard basis for qubits:</p>
+                <div class="formula">
+                    |0⟩ = [1, 0]ᵀ
+                </div>
+                <div class="formula">
+                    |1⟩ = [0, 1]ᵀ
+                </div>
+                
+                <p>Any qubit state can be written as:</p>
+                <div class="formula">
+                    |ψ⟩ = α|0⟩ + β|1⟩
+                </div>
+                <p>where |α|² + |β|² = 1</p>
+                
+                <div class="example-box">
+                    <h3>Example: Superposition State</h3>
+                    <p>|+⟩ = (1/√2)|0⟩ + (1/√2)|1⟩</p>
+                    <div class="formula">
+                        = (1/√2)[1, 0]ᵀ + (1/√2)[0, 1]ᵀ
+                    </div>
+                    <div class="formula">
+                        = [1/√2, 1/√2]ᵀ
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Python Implementation</h2>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+# Computational basis states<br>
+zero = np.array([[1], [0]], dtype=complex)<br>
+one = np.array([[0], [1]], dtype=complex)<br>
+<br>
+# Create superposition<br>
+alpha = 0.6<br>
+beta = 0.8<br>
+psi = alpha * zero + beta * one<br>
+<br>
+print(f"|ψ⟩ = {psi.T[0]}")<br>
+# Output: [0.6+0.j 0.8+0.j]<br>
+<br>
+# Verify normalization<br>
+norm = np.linalg.norm(psi)<br>
+print(f"||ψ⟩|| = {norm:.4f}")  # 1.0000
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Alternative Bases</h2>
+            
+            <h3>Hadamard Basis (|+⟩/|-⟩)</h3>
+            <div class="formula">
+                |+⟩ = (1/√2)(|0⟩ + |1⟩) = [1/√2, 1/√2]ᵀ
+            </div>
+            <div class="formula">
+                |-⟩ = (1/√2)(|0⟩ - |1⟩) = [1/√2, -1/√2]ᵀ
+            </div>
+            
+            <p>Any qubit can also be written in this basis:</p>
+            <div class="formula">
+                |ψ⟩ = γ|+⟩ + δ|-⟩
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: |0⟩ in Hadamard Basis</h3>
+                <p>|0⟩ = (1/√2)|+⟩ + (1/√2)|-⟩</p>
+                <p>Verify:</p>
+                <div class="formula">
+                    (1/√2)|+⟩ + (1/√2)|-⟩
+                </div>
+                <div class="formula">
+                    = (1/√2)·(1/√2)(|0⟩ + |1⟩) + (1/√2)·(1/√2)(|0⟩ - |1⟩)
+                </div>
+                <div class="formula">
+                    = (1/2)|0⟩ + (1/2)|1⟩ + (1/2)|0⟩ - (1/2)|1⟩
+                </div>
+                <div class="formula">
+                    = |0⟩ ✓
+                </div>
+            </div>
+            
+            <h3>Circular Basis (|R⟩/|L⟩)</h3>
+            <div class="formula">
+                |R⟩ = (1/√2)(|0⟩ + i|1⟩)
+            </div>
+            <div class="formula">
+                |L⟩ = (1/√2)(|0⟩ - i|1⟩)
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Basis Representation</h2>
+            <p>Given a basis {|b₁⟩, |b₂⟩, ...}, any vector |ψ⟩ can be written as:</p>
+            <div class="formula">
+                |ψ⟩ = Σᵢ cᵢ|bᵢ⟩
+            </div>
+            
+            <p>The coefficients cᵢ are found using inner products:</p>
+            <div class="formula">
+                cᵢ = ⟨bᵢ|ψ⟩
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Finding Coefficients</h3>
+                <p>Given |ψ⟩ = [1/√2, 1/√2]ᵀ, find representation in computational basis</p>
+                
+                <p>Coefficient for |0⟩:</p>
+                <div class="formula">
+                    α = ⟨0|ψ⟩ = 1/√2
+                </div>
+                
+                <p>Coefficient for |1⟩:</p>
+                <div class="formula">
+                    β = ⟨1|ψ⟩ = 1/√2
+                </div>
+                
+                <p>Therefore:</p>
+                <div class="formula">
+                    |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩ = |+⟩
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Change of Basis</h2>
+            <p>Converting between different bases:</p>
+            
+            <h3>From Computational to Hadamard Basis</h3>
+            <div class="formula">
+                |0⟩ = (1/√2)|+⟩ + (1/√2)|-⟩
+            </div>
+            <div class="formula">
+                |1⟩ = (1/√2)|+⟩ - (1/√2)|-⟩
+            </div>
+            
+            <h3>From Hadamard to Computational Basis</h3>
+            <div class="formula">
+                |+⟩ = (1/√2)|0⟩ + (1/√2)|1⟩
+            </div>
+            <div class="formula">
+                |-⟩ = (1/√2)|0⟩ - (1/√2)|1⟩
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Change of Basis</h3>
+                <p>Given |ψ⟩ = 0.6|0⟩ + 0.8|1⟩ in computational basis</p>
+                <p>Express in Hadamard basis:</p>
+                
+                <p>Substitute basis expressions:</p>
+                <div class="formula">
+                    |ψ⟩ = 0.6[(1/√2)|+⟩ + (1/√2)|-⟩] + 0.8[(1/√2)|+⟩ - (1/√2)|-⟩]
+                </div>
+                
+                <p>Collect terms:</p>
+                <div class="formula">
+                    = [(0.6 + 0.8)/√2]|+⟩ + [(0.6 - 0.8)/√2]|-⟩
+                </div>
+                <div class="formula">
+                    = (1.4/√2)|+⟩ - (0.2/√2)|-⟩
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Multi-Qubit Bases</h2>
+            
+            <h3>Two-Qubit Computational Basis</h3>
+            <p>For 2 qubits, the basis has 4 states:</p>
+            <div class="formula">
+                |00⟩ = [1, 0, 0, 0]ᵀ
+            </div>
+            <div class="formula">
+                |01⟩ = [0, 1, 0, 0]ᵀ
+            </div>
+            <div class="formula">
+                |10⟩ = [0, 0, 1, 0]ᵀ
+            </div>
+            <div class="formula">
+                |11⟩ = [0, 0, 0, 1]ᵀ
+            </div>
+            
+            <p>Any 2-qubit state:</p>
+            <div class="formula">
+                |ψ⟩ = α|00⟩ + β|01⟩ + γ|10⟩ + δ|11⟩
+            </div>
+            <p>where |α|² + |β|² + |γ|² + |δ|² = 1</p>
+            
+            <div class="example-box">
+                <h3>Example: Bell State</h3>
+                <p>|Φ⁺⟩ = (1/√2)|00⟩ + (1/√2)|11⟩</p>
+                <div class="formula">
+                    = [1/√2, 0, 0, 1/√2]ᵀ
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Orthonormal Basis</h2>
+            <p>A basis is <span class="highlight">orthonormal</span> if:</p>
+            <ul>
+                <li>All basis vectors are normalized: ⟨bᵢ|bᵢ⟩ = 1</li>
+                <li>All pairs are orthogonal: ⟨bᵢ|bⱼ⟩ = 0 for i ≠ j</li>
+            </ul>
+            
+            <div class="formula">
+                ⟨bᵢ|bⱼ⟩ = δᵢⱼ
+            </div>
+            
+            <div class="example-box">
+                <h3>Computational Basis is Orthonormal</h3>
+                <p>⟨0|0⟩ = 1 ✓</p>
+                <p>⟨1|1⟩ = 1 ✓</p>
+                <p>⟨0|1⟩ = 0 ✓</p>
+                <p>⟨1|0⟩ = 0 ✓</p>
+            </div>
+            
+            <div class="example-box">
+                <h3>Hadamard Basis is Orthonormal</h3>
+                <p>⟨+|+⟩ = 1 ✓</p>
+                <p>⟨-|-⟩ = 1 ✓</p>
+                <p>⟨+|-⟩ = 0 ✓</p>
+                <p>⟨-|+⟩ = 0 ✓</p>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Applications</h2>
+            
+            <h3>1. State Representation</h3>
+            <p>Express quantum states in different bases for different purposes</p>
+            
+            <h3>2. Measurement</h3>
+            <p>Measurement outcomes correspond to basis states</p>
+            <ul>
+                <li>Computational basis: measure |0⟩ or |1⟩</li>
+                <li>Hadamard basis: measure |+⟩ or |-⟩</li>
+            </ul>
+            
+            <h3>3. Quantum Algorithms</h3>
+            <p>Different algorithms work in different bases:</p>
+            <ul>
+                <li>Deutsch-Jozsa: uses Hadamard basis</li>
+                <li>Grover: amplitude amplification in computational basis</li>
+            </ul>
+            
+            <h3>4. Quantum Error Correction</h3>
+            <p>Encode information across multiple basis states</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="../06-norm/index.html" class="btn">← Previous: Norm</a>
+            <a href="../index.html" class="btn">Home</a>
+            <a href="../08-orthogonality/index.html" class="btn">Next: Orthogonality →</a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let zeroArrow, oneArrow, psiArrow;
+        let zeroSphere, oneSphere, psiSphere;
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(6, 5, 6);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            createScene();
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.8, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            // Setup interactive controls
+            setupControls();
+            
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+        
+        function createScene() {
+            const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            // Create initial state
+            updateState(0.6, 0.8);
+        }
+        
+        function updateState(alpha, beta) {
+            // Remove old objects
+            if (zeroArrow) scene.remove(zeroArrow);
+            if (oneArrow) scene.remove(oneArrow);
+            if (psiArrow) scene.remove(psiArrow);
+            if (zeroSphere) scene.remove(zeroSphere);
+            if (oneSphere) scene.remove(oneSphere);
+            if (psiSphere) scene.remove(psiSphere);
+            
+            // Normalize
+            const norm = Math.sqrt(alpha * alpha + beta * beta);
+            let alphaN = alpha, betaN = beta;
+            if (norm > 0) {
+                alphaN = alpha / norm;
+                betaN = beta / norm;
+            }
+            
+            // Update displays
+            document.getElementById('state-result').textContent = `${alpha.toFixed(2)}|0⟩ + ${beta.toFixed(2)}|1⟩`;
+            document.getElementById('normalized-result').textContent = `${alphaN.toFixed(2)}|0⟩ + ${betaN.toFixed(2)}|1⟩`;
+            
+            // Create basis vectors
+            // |0⟩ along x-axis
+            const zeroDir = new THREE.Vector3(1, 0, 0);
+            zeroArrow = new THREE.ArrowHelper(zeroDir, new THREE.Vector3(0, 0, 0), 2, 0x0088ff, 0.4, 0.25);
+            scene.add(zeroArrow);
+            
+            const sphereGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+            zeroSphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                color: 0x0088ff, emissive: 0x0088ff, emissiveIntensity: 0.3 
+            }));
+            zeroSphere.position.set(2, 0, 0);
+            scene.add(zeroSphere);
+            
+            // |1⟩ along z-axis
+            const oneDir = new THREE.Vector3(0, 0, 1);
+            oneArrow = new THREE.ArrowHelper(oneDir, new THREE.Vector3(0, 0, 0), 2, 0xff0088, 0.4, 0.25);
+            scene.add(oneArrow);
+            
+            oneSphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                color: 0xff0088, emissive: 0xff0088, emissiveIntensity: 0.3 
+            }));
+            oneSphere.position.set(0, 0, 2);
+            scene.add(oneSphere);
+            
+            // |ψ⟩ = α|0⟩ + β|1⟩
+            const psiX = alphaN * 2;
+            const psiZ = betaN * 2;
+            const psiLength = Math.sqrt(psiX * psiX + psiZ * psiZ);
+            
+            if (psiLength > 0) {
+                const psiDir = new THREE.Vector3(psiX, 0, psiZ).normalize();
+                psiArrow = new THREE.ArrowHelper(psiDir, new THREE.Vector3(0, 0, 0), psiLength, 0x00ff88, 0.5, 0.3);
+                scene.add(psiArrow);
+                
+                psiSphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                    color: 0x00ff88, emissive: 0x00ff88, emissiveIntensity: 0.3 
+                }));
+                psiSphere.position.set(psiX, 0, psiZ);
+                scene.add(psiSphere);
+            }
+        }
+        
+        function setupControls() {
+            const sliders = ['alpha', 'beta'];
+            
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                const display = document.getElementById(id + '-value');
+                
+                slider.addEventListener('input', function() {
+                    display.textContent = parseFloat(this.value).toFixed(2);
+                    
+                    const alpha = parseFloat(document.getElementById('alpha').value);
+                    const beta = parseFloat(document.getElementById('beta').value);
+                    
+                    updateState(alpha, beta);
+                });
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            // Gentle bobbing animation
+            if (zeroSphere) zeroSphere.position.y = Math.sin(time) * 0.15;
+            if (oneSphere) oneSphere.position.y = Math.sin(time + Math.PI/2) * 0.15;
+            if (psiSphere) psiSphere.position.y = Math.sin(time + Math.PI) * 0.15;
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
