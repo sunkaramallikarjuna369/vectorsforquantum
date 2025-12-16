@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>06 - Norm and Normalization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .interactive-controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+        
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .result-display {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 1.2em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>||·|| Norm and Normalization</h1>
+            <p>Vector Magnitude and Quantum State Normalization</p>
+        </header>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="interactive-controls">
+            <h3>Interactive Norm Calculator</h3>
+            <p>Adjust the vector components to see the norm and normalized vector:</p>
+            
+            <div class="slider-container">
+                <label>X Component: <span class="value-display" id="vx-value">3.0</span></label>
+                <input type="range" id="vx" min="-5" max="5" step="0.5" value="3">
+            </div>
+            
+            <div class="slider-container">
+                <label>Y Component: <span class="value-display" id="vy-value">4.0</span></label>
+                <input type="range" id="vy" min="-5" max="5" step="0.5" value="4">
+            </div>
+            
+            <div class="result-display">
+                Norm ||v|| = <span id="norm-result">5.0</span>
+            </div>
+            
+            <div class="result-display">
+                Normalized: v̂ = <span id="normalized-result">[0.60, 0.80]</span>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="panel">
+                <h2>Definition</h2>
+                <p>The <span class="highlight">norm</span> (or magnitude) measures the length of a vector:</p>
+                
+                <div class="formula">
+                    ||v|| = √(v₁² + v₂² + ... + vₙ²)
+                </div>
+                
+                <p>For complex vectors:</p>
+                <div class="formula">
+                    ||v|| = √(|v₁|² + |v₂|² + ... + |vₙ|²)
+                </div>
+                
+                <div class="example-box">
+                    <h3>Example: Real Vector</h3>
+                    <p>v = [3, 4]ᵀ</p>
+                    <div class="formula">
+                        ||v|| = √(3² + 4²) = √(9 + 16) = √25 = 5
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Normalization</h2>
+                <p><span class="highlight">Normalization</span> creates a unit vector (length 1):</p>
+                
+                <div class="formula">
+                    v̂ = v / ||v||
+                </div>
+                
+                <p>The normalized vector v̂ has:</p>
+                <ul>
+                    <li>Same direction as v</li>
+                    <li>Length exactly 1</li>
+                </ul>
+                
+                <div class="example-box">
+                    <h3>Example</h3>
+                    <p>v = [3, 4]ᵀ, ||v|| = 5</p>
+                    <div class="formula">
+                        v̂ = [3, 4]ᵀ / 5 = [0.6, 0.8]ᵀ
+                    </div>
+                    <p>Check: ||v̂|| = √(0.6² + 0.8²) = √(0.36 + 0.64) = 1 ✓</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Python Implementation</h2>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+# Real vector<br>
+v = np.array([[3], [4]], dtype=float)<br>
+<br>
+# Calculate norm<br>
+norm = np.linalg.norm(v)<br>
+print(f"||v|| = {norm}")<br>
+# Output: 5.0<br>
+<br>
+# Normalize<br>
+v_normalized = v / norm<br>
+print(f"v̂ = {v_normalized.T[0]}")<br>
+# Output: [0.6 0.8]<br>
+<br>
+# Verify<br>
+print(f"||v̂|| = {np.linalg.norm(v_normalized)}")<br>
+# Output: 1.0
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Properties of Norm</h2>
+                
+                <div class="content-grid">
+                    <div class="example-box">
+                        <h3>1. Non-negativity</h3>
+                        <div class="formula">
+                            ||v|| ≥ 0
+                        </div>
+                        <p>||v|| = 0 if and only if v = 0</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3>2. Scalar Multiplication</h3>
+                        <div class="formula">
+                            ||cv|| = |c| · ||v||
+                        </div>
+                        <p>For scalar c</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3>3. Triangle Inequality</h3>
+                        <div class="formula">
+                            ||v + w|| ≤ ||v|| + ||w||
+                        </div>
+                        <p>Sum of norms ≥ norm of sum</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h3>4. Relationship to Inner Product</h3>
+                        <div class="formula">
+                            ||v|| = √⟨v|v⟩
+                        </div>
+                        <p>Norm from inner product</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Quantum State Normalization</h2>
+            <p>In quantum mechanics, <span class="highlight">all valid states must be normalized</span>!</p>
+            
+            <h3>Normalization Condition</h3>
+            <div class="formula">
+                ||ψ⟩|| = 1
+            </div>
+            <p>This ensures total probability = 1</p>
+            
+            <div class="formula">
+                |α|² + |β|² = 1
+            </div>
+            
+            <div class="example-box">
+                <h3>Example: Normalizing a Quantum State</h3>
+                <p>Given: |ψ⟩ = [3, 4]ᵀ</p>
+                
+                <p>Step 1: Calculate norm</p>
+                <div class="formula">
+                    ||ψ⟩|| = √(3² + 4²) = 5
+                </div>
+                
+                <p>Step 2: Normalize</p>
+                <div class="formula">
+                    |ψ̂⟩ = |ψ⟩ / ||ψ⟩|| = [3, 4]ᵀ / 5 = [0.6, 0.8]ᵀ
+                </div>
+                
+                <p>Step 3: Verify</p>
+                <div class="formula">
+                    |0.6|² + |0.8|² = 0.36 + 0.64 = 1 ✓
+                </div>
+                
+                <div class="code-block">
+import numpy as np<br>
+<br>
+psi = np.array([[3], [4]], dtype=complex)<br>
+norm = np.linalg.norm(psi)<br>
+<br>
+psi_normalized = psi / norm<br>
+<br>
+# Verify probabilities sum to 1<br>
+prob_sum = np.sum(np.abs(psi_normalized)**2)<br>
+print(f"Total probability: {prob_sum:.4f}")  # 1.0000
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Complex Vector Normalization</h2>
+            
+            <div class="example-box">
+                <h3>Example 1: Complex Components</h3>
+                <p>|ψ⟩ = [1+i, 2-i]ᵀ</p>
+                
+                <p>Calculate norm:</p>
+                <div class="formula">
+                    ||ψ⟩|| = √(|1+i|² + |2-i|²)
+                </div>
+                <div class="formula">
+                    = √((1² + 1²) + (2² + (-1)²))
+                </div>
+                <div class="formula">
+                    = √(2 + 5) = √7 ≈ 2.646
+                </div>
+                
+                <p>Normalized:</p>
+                <div class="formula">
+                    |ψ̂⟩ = [(1+i)/√7, (2-i)/√7]ᵀ
+                </div>
+            </div>
+            
+            <div class="example-box">
+                <h3>Example 2: Pure Phase</h3>
+                <p>|ψ⟩ = [e^(iπ/4), e^(iπ/2)]ᵀ</p>
+                
+                <p>Calculate norm:</p>
+                <div class="formula">
+                    ||ψ⟩|| = √(|e^(iπ/4)|² + |e^(iπ/2)|²)
+                </div>
+                <div class="formula">
+                    = √(1 + 1) = √2
+                </div>
+                
+                <p>Normalized:</p>
+                <div class="formula">
+                    |ψ̂⟩ = [e^(iπ/4)/√2, e^(iπ/2)/√2]ᵀ
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Common Quantum States</h2>
+            
+            <div class="content-grid">
+                <div class="example-box">
+                    <h3>Computational Basis</h3>
+                    <p>|0⟩ = [1, 0]ᵀ</p>
+                    <p>||0⟩|| = 1 ✓</p>
+                    <p>|1⟩ = [0, 1]ᵀ</p>
+                    <p>||1⟩|| = 1 ✓</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Superposition States</h3>
+                    <p>|+⟩ = (1/√2)[1, 1]ᵀ</p>
+                    <p>||+⟩|| = 1 ✓</p>
+                    <p>|-⟩ = (1/√2)[1, -1]ᵀ</p>
+                    <p>||-⟩|| = 1 ✓</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>General Qubit</h3>
+                    <p>|ψ⟩ = α|0⟩ + β|1⟩</p>
+                    <p>where |α|² + |β|² = 1</p>
+                    <p>||ψ⟩|| = 1 ✓</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Bell State</h3>
+                    <p>|Φ⁺⟩ = (1/√2)(|00⟩ + |11⟩)</p>
+                    <p>||Φ⁺⟩|| = 1 ✓</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Distance Between Vectors</h2>
+            <p>The norm defines distance in vector space:</p>
+            
+            <div class="formula">
+                d(v, w) = ||v - w||
+            </div>
+            
+            <div class="example-box">
+                <h3>Example</h3>
+                <p>v = [3, 4]ᵀ, w = [1, 2]ᵀ</p>
+                
+                <p>Difference:</p>
+                <div class="formula">
+                    v - w = [2, 2]ᵀ
+                </div>
+                
+                <p>Distance:</p>
+                <div class="formula">
+                    d(v, w) = ||[2, 2]ᵀ|| = √(4 + 4) = √8 ≈ 2.828
+                </div>
+            </div>
+            
+            <h3>Quantum State Distance</h3>
+            <p>Distance between quantum states |ψ⟩ and |φ⟩:</p>
+            <div class="formula">
+                d(ψ, φ) = ||ψ⟩ - |φ⟩||
+            </div>
+            <p>Measures how different two quantum states are</p>
+        </div>
+        
+        <div class="panel">
+            <h2>Unit Vectors</h2>
+            <p>A <span class="highlight">unit vector</span> has norm 1:</p>
+            
+            <div class="formula">
+                ||v̂|| = 1
+            </div>
+            
+            <h3>Standard Unit Vectors</h3>
+            <p>In 2D:</p>
+            <ul>
+                <li>ê₁ = [1, 0]ᵀ (x-direction)</li>
+                <li>ê₂ = [0, 1]ᵀ (y-direction)</li>
+            </ul>
+            
+            <p>In 3D:</p>
+            <ul>
+                <li>ê₁ = [1, 0, 0]ᵀ (x-direction)</li>
+                <li>ê₂ = [0, 1, 0]ᵀ (y-direction)</li>
+                <li>ê₃ = [0, 0, 1]ᵀ (z-direction)</li>
+            </ul>
+            
+            <div class="example-box">
+                <h3>Creating Unit Vector in Any Direction</h3>
+                <p>Given direction v, create unit vector:</p>
+                <div class="formula">
+                    v̂ = v / ||v||
+                </div>
+                
+                <p>Example: v = [3, 4]ᵀ</p>
+                <p>v̂ = [3, 4]ᵀ / 5 = [0.6, 0.8]ᵀ</p>
+                <p>Points in same direction, but length 1</p>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Applications</h2>
+            
+            <h3>1. Quantum State Preparation</h3>
+            <p>Always normalize states before use:</p>
+            <div class="formula">
+                |ψ⟩ → |ψ⟩ / ||ψ⟩||
+            </div>
+            
+            <h3>2. Probability Calculation</h3>
+            <p>Normalized states ensure valid probabilities:</p>
+            <div class="formula">
+                Σᵢ |αᵢ|² = 1
+            </div>
+            
+            <h3>3. Direction Vectors</h3>
+            <p>Unit vectors specify direction without magnitude</p>
+            
+            <h3>4. Orthonormal Bases</h3>
+            <p>Basis vectors must be normalized:</p>
+            <div class="formula">
+                ||eᵢ|| = 1 for all i
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="../05-inner-product/index.html" class="btn">← Previous: Inner Product</a>
+            <a href="../index.html" class="btn">Home</a>
+            <a href="../07-basis-vectors/index.html" class="btn">Next: Basis Vectors →</a>
+        </div>
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let originalArrow, normalizedArrow;
+        let originalSphere, normalizedSphere;
+        let unitCircle;
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(8, 6, 8);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            createScene();
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 0.8, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            // Setup interactive controls
+            setupControls();
+            
+            window.addEventListener('resize', onWindowResize, false);
+            
+            animate();
+        }
+        
+        function createScene() {
+            const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            const axesHelper = new THREE.AxesHelper(6);
+            scene.add(axesHelper);
+            
+            // Draw unit circle
+            const circleGeometry = new THREE.CircleGeometry(1, 64);
+            const circleEdges = new THREE.EdgesGeometry(circleGeometry);
+            unitCircle = new THREE.LineSegments(circleEdges, new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 }));
+            unitCircle.rotation.x = -Math.PI / 2;
+            unitCircle.position.y = 0.01;
+            scene.add(unitCircle);
+            
+            // Create initial vectors
+            updateVectors(3, 4);
+        }
+        
+        function updateVectors(vx, vy) {
+            // Remove old objects
+            if (originalArrow) scene.remove(originalArrow);
+            if (normalizedArrow) scene.remove(normalizedArrow);
+            if (originalSphere) scene.remove(originalSphere);
+            if (normalizedSphere) scene.remove(normalizedSphere);
+            
+            // Calculate norm
+            const norm = Math.sqrt(vx * vx + vy * vy);
+            
+            // Calculate normalized vector
+            let normX = 0, normY = 0;
+            if (norm > 0) {
+                normX = vx / norm;
+                normY = vy / norm;
+            }
+            
+            // Update displays
+            document.getElementById('norm-result').textContent = norm.toFixed(2);
+            document.getElementById('normalized-result').textContent = `[${normX.toFixed(2)}, ${normY.toFixed(2)}]`;
+            
+            // Create original vector arrow (blue)
+            if (norm > 0) {
+                const origDir = new THREE.Vector3(vx, 0, vy).normalize();
+                originalArrow = new THREE.ArrowHelper(origDir, new THREE.Vector3(0, 0, 0), norm, 0x0088ff, 0.5, 0.3);
+                scene.add(originalArrow);
+                
+                const sphereGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+                originalSphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                    color: 0x0088ff, emissive: 0x0088ff, emissiveIntensity: 0.3 
+                }));
+                originalSphere.position.set(vx, 0, vy);
+                scene.add(originalSphere);
+            }
+            
+            // Create normalized vector arrow (green)
+            if (norm > 0) {
+                const normDir = new THREE.Vector3(normX, 0, normY).normalize();
+                normalizedArrow = new THREE.ArrowHelper(normDir, new THREE.Vector3(0, 0, 0), 1, 0x00ff88, 0.4, 0.25);
+                scene.add(normalizedArrow);
+                
+                const sphereGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+                normalizedSphere = new THREE.Mesh(sphereGeometry, new THREE.MeshPhongMaterial({ 
+                    color: 0x00ff88, emissive: 0x00ff88, emissiveIntensity: 0.3 
+                }));
+                normalizedSphere.position.set(normX, 0, normY);
+                scene.add(normalizedSphere);
+            }
+        }
+        
+        function setupControls() {
+            const sliders = ['vx', 'vy'];
+            
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                const display = document.getElementById(id + '-value');
+                
+                slider.addEventListener('input', function() {
+                    display.textContent = parseFloat(this.value).toFixed(1);
+                    
+                    const vx = parseFloat(document.getElementById('vx').value);
+                    const vy = parseFloat(document.getElementById('vy').value);
+                    
+                    updateVectors(vx, vy);
+                });
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            // Gentle bobbing animation
+            if (originalSphere) originalSphere.position.y = Math.sin(time) * 0.15;
+            if (normalizedSphere) normalizedSphere.position.y = Math.sin(time + Math.PI) * 0.15;
+            
+            // Rotate unit circle slightly
+            if (unitCircle) unitCircle.rotation.z = time * 0.1;
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
